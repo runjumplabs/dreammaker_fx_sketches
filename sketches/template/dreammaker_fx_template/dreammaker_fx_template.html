@@ -1,94 +1,107 @@
-&lt;!doctype html&gt;
+<!doctype html>
 
-&lt;html lang="en"&gt;
-&lt;head&gt;
-  &lt;meta charset="utf-8"&gt;
+<html lang="en">
+<head>
+  <meta charset="utf-8">
 
-  &lt;title&gt;__TITLE__&lt;/title&gt;
+  <title>__TITLE__</title>
 
-	&lt;link rel="stylesheet"
-	      href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css"&gt;
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
 
 	
-&lt;/head&gt;
-&lt;body&gt;
+</head>
+<body>
 
-&lt;pre&gt;&lt;code class="arduino"&gt;
-/*****************************************************************************
- * Add a description of your effect
- * 
- *****************************************************************************
- * Left pot: describe left pot function
- * Center pot: describe center pot function
- * Right pot: describe right pot function
- * 
- * Left footswitch: describe left footswitch function
- * Right footswitch: describe right footswitch function
- * 
- * Created by: your alias
- * DreamMakerFx package: DreamMakerFx package version used x.y.z (e.g. 1.4.2)
- * Version: version of your sketch (e.g. 1.0)
- * 
- * www.dreammakerfx.com
- * 
- ********************************************************************************/
-#include &lt;dreammakerfx.h&gt;
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Describe a bit about how your effect works.  Feel free to use multiple lines, 
+just don't delete or change any of the field names. 
 
-// Add your fx module declarations here
+Effect name: Add a clever name
+Effect description:  What does it do
+
+Left pot label: left pot label
+Left pot function: describe left pot function
+
+Center pot label: center pot label
+Center pot function: describe center pot function
+
+Right pot label: right pot label
+Right pot function: describe right pot function
+
+Left footswitch label: 
+Left footswitch function: describe left footswitch function
+
+Right footswitch label:
+Right footswitch function: describe right footswitch function
+
+Youtube Url: optional, add a URL to a youtube video
+Soundcloud Url: optional, add a URL to a soundcloud audio clip
+
+Created by: your alias
+DreamMakerFx package: DreamMakerFx package version used x.y.z (e.g. 1.4.2)
+Version: version of your sketch (e.g. 1.0)
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+
+<span class="hljs-comment">// Add your fx module declarations here</span>
 
 
 
 
-void setup() {
-  // put your setup code here, to run once:
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
 
     
-  // put your setup code here, to run once:
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
   pedal.init();
 
-  // Route audio from pedal.instr_in to pedal.amp_out
+  <span class="hljs-comment">// Route audio from pedal.instr_in to pedal.amp_out</span>
   pedal.route_audio(pedal.instr_in, );
   pedal.route_audio(vibrato.output, pedal.amp_out);  
 
-  // Optionally use a bypass switch FOOTSWITCH_LEFT or FOOTSWITCH_RIGHT
-  // pedal.add_bypass_button(FOOTSWITCH_LEFT);
+  <span class="hljs-comment">// Optionally use a bypass switch FOOTSWITCH_LEFT or FOOTSWITCH_RIGHT</span>
+  <span class="hljs-comment">// pedal.add_bypass_button(FOOTSWITCH_LEFT);</span>
 
-  // Optionally use a tap tempo / delay switch
-  // Can also be FOOTSWITCH_LEFT or FOOTSWITCH_RIGHT but different than
-  // the bypass switch
-  // pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, true);
+  <span class="hljs-comment">// Optionally use a tap tempo / delay switch</span>
+  <span class="hljs-comment">// Can also be FOOTSWITCH_LEFT or FOOTSWITCH_RIGHT but different than</span>
+  <span class="hljs-comment">// the bypass switch</span>
+  <span class="hljs-comment">// pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, true);</span>
 
-  // Run this effect
+  <span class="hljs-comment">// Run this effect</span>
   pedal.run();
 
 }
 
 
-void loop() {
-  // put your main code here, to run repeatedly:
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your main code here, to run repeatedly:</span>
 
-  // Left pot control
-  if (pedal.pot_left.has_changed()) { 
-    // Left pot value is: pedal.pot_left.val
+  <span class="hljs-comment">// Left pot control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    <span class="hljs-comment">// Left pot value is: pedal.pot_left.val</span>
   } 
 
-  // Center pot control
-  if (pedal.pot_center.has_changed()) { 
-    // Center pot value is: pedal.pot_center.val
+  <span class="hljs-comment">// Center pot control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    <span class="hljs-comment">// Center pot value is: pedal.pot_center.val</span>
   } 
 
-  // Right pot set control
-  if (pedal.pot_right.has_changed()) {
-    // Right pot value is: pedal.pot_right.val
+  <span class="hljs-comment">// Right pot set control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-comment">// Right pot value is: pedal.pot_right.val</span>
   }
 
-  // Run pedal service to take care of stuff
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
   pedal.service();  
 
 }
+</code></pre>
 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;/body&gt;	
-	&lt;script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"&gt;&lt;/script&gt;
-&lt;/html&gt;
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

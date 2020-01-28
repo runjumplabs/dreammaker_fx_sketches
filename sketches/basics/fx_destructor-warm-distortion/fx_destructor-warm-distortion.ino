@@ -1,17 +1,36 @@
-/**
- * This is an implementation of a basic distortion pedal   
- * 
- * Left pot: depth - the threshold where compression kicks in
- * Center pot: delay time - the amount to compress after threshold crossed
- * Right pot: type of modulation - output gain
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: drive boost - hold down to set drive to max
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_compressor block
- * 
- */
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Smooth distortion example
+
+Effect description:  This is an example that shows how to use the fx_destructor
+effect to create a smooth, tube-like distortion sound. To make this more interesting,
+try adding additional destructor and tone (fx_biquad_filter) elements either in series
+or in parallel.
+
+Left pot label: Drive
+Left pot function: Sets input drive of distortion
+
+Center pot label: Tone
+Center pot function: Sets tone of distortion
+
+Right pot label: Gain
+Right pot function: Sets output gain of distortion
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Drive boost
+Right footswitch function: Sets drive to max while held down
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/ 
 #include <dreammakerfx.h>
                               
 fx_destructor       destruct(0.1,           // Clipping level (from 0 to 1.0) - lower is heavier distortion
