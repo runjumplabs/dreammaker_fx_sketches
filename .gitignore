@@ -1,3 +1,5 @@
+temp/
+
 # Prerequisites
 *.d
 
@@ -33,4 +35,5 @@
 
 # OS X
 .DS_Store
+
 
