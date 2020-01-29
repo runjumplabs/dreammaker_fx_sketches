@@ -40,12 +40,11 @@ Version: version of your sketch (e.g. 1.0)
 
 void setup() {
   // put your setup code here, to run once:
-
-    
-  // put your setup code here, to run once:
+   
+  // Initialize the pedal!
   pedal.init();
 
-  // Route audio from pedal.instr_in to pedal.amp_out
+  // Route audio through effects from pedal.instr_in to pedal.amp_out
   pedal.route_audio(pedal.instr_in, );
   pedal.route_audio(vibrato.output, pedal.amp_out);  
 

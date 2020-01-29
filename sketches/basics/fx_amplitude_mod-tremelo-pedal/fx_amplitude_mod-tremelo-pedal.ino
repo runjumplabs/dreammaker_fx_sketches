@@ -1,20 +1,40 @@
-/**
- * This is an implementation of a typical delay / echo pedal.   
- * 
- * Left pot: depth - the depth of the tremelo effect
- * Center pot: delay time - modulation rate
- * Right pot: type of modulation - from counterclockwise to clockwise is sine -> triangle -> square -> random
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: tap - tap it a few times at a set interval to update the vibrato modulation rate
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_amplitude_mod block
- * 
- * 
- */
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Tremelo example using amplitude modulator 
+
+Effect description:  This is an example that shows how to use the fx_amplitude_mod
+effect to create a tremelo pedal effects.  The ADSR envelope standads for attack-decay-
+sustain-release and controls how quickly a note fades and out.  The sketch also
+demonstrates how to route the new note pedal event to the ADSR envelope so each time 
+you play a new note, the ADSR envelope is applied.
+
+Left pot label: Depth
+Left pot function: The depth of the tremelo effect
+
+Center pot label: Modulation rate
+Center pot function: Rate of amplitude modulation
+
+Right pot label: Type of modulation
+Right pot function: From counterclockwise to clockwise is sine -> triangle -> square -> random
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap rate
+Right footswitch function: Tap this switch at a tempo to set the rate of the tremelo
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/  
 #include <dreammakerfx.h>
 
+// Add your fx module declarations here
 fx_amplitude_mod  tremy(1.0,       // Rate is 1.0Hz (1 cycle per second)
                         0.5,       // Initial depth is 0.5 (50% volume reduction)
                         0.0,       // Initial phase is 0 degrees

@@ -1,19 +1,37 @@
-/**
- * This is an implementation of a parametric filtering pedal.   
- * 
- * Left pot: filter center frequency
- * Center pot: filter gain (-12dB full counterclockwise to +12dB full clockwise)
- * Right pot: filter width
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: nothing
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_biquad_filter block
- * 
- */
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Parametric filter 
+
+Effect description:  This is an example that shows how to use the fx_biquad_filter
+effect to create a parametric filter.  
+
+Left pot label: Frequency
+Left pot function: The filter center frequency
+
+Center pot label: Gain
+Center pot function: The gain of the filter (-12dB full counterclockwise to +12dB full clockwise)
+
+Right pot label: Width
+Right pot function: The width / resonance of the filter
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Nothing
+Right footswitch function: Nothing
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/   
 #include <dreammakerfx.h>
 
+// Add your fx module declarations here
 fx_biquad_filter parametric(500.0,                // Initial center frequency
                             1.0,                  // standard resonance
                             0.0,                  // Set initial gain at 0 (no effect)
@@ -22,8 +40,9 @@ fx_biquad_filter parametric(500.0,                // Initial center frequency
                             BIQUAD_ORDER_4);      // 4th order filter (medium intense filtering effect)
 
 void setup() {
-  
   // put your setup code here, to run once:
+
+  // Initialize the pedal!
   pedal.init();
 
   // Route audio
@@ -43,8 +62,8 @@ void setup() {
 
 
 void loop() {
-
-
+  // put your main code here, to run repeatedly:
+ 
   // Left pot controls depth of the effect
   if (pedal.pot_left.has_changed()) { 
     parametric.set_freq(100.0 + pedal.pot_left.val*1200);     

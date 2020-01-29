@@ -1,5 +1,6 @@
 /**
  * This is an implementation of a typical compressor pedal   
+ * Here's a nice video that explains how compressors work: https://www.youtube.com/embed/8nM5GsNNbyA
  * 
  * Left pot: depth - the threshold where compression kicks in
  * Center pot: delay time - the amount to compress after threshold crossed
@@ -12,6 +13,38 @@
  * It's provided as an example of how to use the various features of the fx_compressor block
  * 
  */
+
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Compressor / sustainer pedal
+
+Effect description:  This is an example that shows how to use the fx_compressor 
+effect to create a compressor sustainer pedal
+
+Left pot label: Threshold
+Left pot function: The threshold where compression kicks in
+
+Center pot label: Compression Rate
+Center pot function: The amount to compress after threshold crossed
+
+Right pot label: Gain
+Right pot function: The output gain of the compressor
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Nothing
+Right footswitch function: Nothing
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/    
 #include <dreammakerfx.h>
 
 fx_compressor compressor( -30.0,    // Threshold in dB
