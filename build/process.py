@@ -1,3 +1,4 @@
+from pathlib import Path
 import json
 from os import listdir
 from os.path import isfile, join
@@ -12,12 +13,18 @@ rootdir = '../sketches/'
 for root, subdirs, files in os.walk(rootdir):
     for filename in files:
         if filename[-4:] == ".ino" and filename != "dreammaker_fx_template.ino":
+
+            root_output = root.replace("/sketches/","/autogen/")
+            if (not os.path.isdir(root_output)):
+                Path(root_output).mkdir(parents=True, exist_ok=True)
+
+
             this_data ={}
             this_data['fn'] = filename
             file_root = filename
             sketch_path = os.path.join(root, filename)
-            this_data['ino_path'] = sketch_path.replace("../sketches/","")
-            this_data['path'] = sketch_path.replace("../sketches/","").replace(filename,"")
+            this_data['ino_path'] = os.path.join(root_output, filename)
+            this_data['path'] = os.path.join(root_output, filename).replace(filename,"")
 
             # Process headers and create json
             with open(sketch_path, 'r') as file:
@@ -52,28 +59,29 @@ for root, subdirs, files in os.walk(rootdir):
 
                     result.update(this_data)
 
-                    with open(os.path.join(root,'autogen.json'), 'w') as outfile:
+                    with open(os.path.join(root_output,'autogen.json'), 'w') as outfile:
                         json.dump(result, outfile)
+
 
 
             # Create binary
             os.system('/Applications/Arduino.app/Contents/MacOS/Arduino --pref build.path=../temp --verify '+sketch_path)
             # Create UF2 file
-            os.system('python3 uf2conv.py ../temp/'+file_root+".bin -o "+root+"/CURRENT.UF2 -f SAMD51 -b 0x4000")
+            os.system('python3 uf2conv.py ../temp/'+file_root+".bin -o "+root_output+"/CURRENT.UF2 -f SAMD51 -b 0x4000")
 
-            if os.path.isfile(root+"/CURRENT.UF2"):
+            if os.path.isfile(root_output+"/CURRENT.UF2"):
                 this_data['compiles'] = True
             else:
                 this_data['compiles'] = False
 
             # Create HTML file
-            if (os.path.isfile(root+"/autogen_syntax.html")):
-                os.remove(root+"/autogen_syntax.html")
-            args = ['node','syntax.js',sketch_path, root+"/autogen_syntax.html"]
+            if (os.path.isfile(root_output+"/autogen_syntax.html")):
+                os.remove(root_output+"/autogen_syntax.html")
+            args = ['node','syntax.js',sketch_path, root_output+"/autogen_syntax.html"]
             if True:
                 subprocess.call(args)
             else:
-                subprocess.call('node node syntax.js',sketch_path, root+"/autogen_syntax.html")
+                subprocess.call('node node syntax.js',sketch_path, root_output+"/autogen_syntax.html")
 
             #success = execute_js('syntax.js '+sketch_path+" "+root+"/autogen_syntax.html")
             # Reset temp directory
@@ -82,7 +90,7 @@ for root, subdirs, files in os.walk(rootdir):
 
             alldata.append(this_data)
 
-with open(os.path.join(root,'../all_data_autogen.json'), 'w') as outfile:
+with open('../autogen/all_data_autogen.json', 'w') as outfile:
     json.dump(alldata, outfile)
             
 
