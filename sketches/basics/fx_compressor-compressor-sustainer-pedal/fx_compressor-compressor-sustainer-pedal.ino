@@ -1,19 +1,3 @@
-/**
- * This is an implementation of a typical compressor pedal   
- * Here's a nice video that explains how compressors work: https://www.youtube.com/embed/8nM5GsNNbyA
- * 
- * Left pot: depth - the threshold where compression kicks in
- * Center pot: delay time - the amount to compress after threshold crossed
- * Right pot: type of modulation - output gain
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: gain boost - press to double instrument volume when effect engaged
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_compressor block
- * 
- */
-
 /******************************************************************************
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/

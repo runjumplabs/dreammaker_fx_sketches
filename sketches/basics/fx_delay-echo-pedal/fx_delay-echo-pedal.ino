@@ -1,5 +1,7 @@
 /**
- * This is an implementation of a typical delay / echo pedal.   
+ * This is an implementation of a typical delay / echo pedal.  The DreamMakerFX 
+ * platform has several minutes of delay memory so while this effect is configured
+ * for 3 seconds, things can get crazy.
  * 
  * Left pot: "feedback" - basically how long the echo lasts before dying out
  * Center pot: delay time - how far apart the echos are (0.1 to 3 seconds)
@@ -13,8 +15,43 @@
  * 
  * 
  */
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Delay pedal
+
+Effect description:  This is an example that shows how to use the fx_delay
+effect to create a basic delay pedal.
+
+Left pot label: Feedback 
+Left pot function: Basically how long the echo lasts before dying out
+
+Center pot label: Delay time
+Center pot function: How far apart the echos are (0.1 to 3 seconds)
+
+Right pot label: Wet/dry mix 
+Right pot function: The mix of clean audio and the echo effect.  All the way left 
+is no effect at all and all the way right is effect only with none of the original 
+dry signal.  Right in the middle (12:00) is a nice mix of the original dry signal
+and the echo signal
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap delay
+Right footswitch function: Tap it a few times at a set interval and the delay will lock on
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/    
 #include <dreammakerfx.h>
 
+// Add your fx module declarations here
 fx_delay    my_delay(3000.0,  // 3000 ms / 3 seconds
                      0.6);    // 0.6 feedback ratio
 
@@ -60,6 +97,8 @@ void loop() {
   if (pedal.pot_center.has_changed()) {
     float new_length_ms = 100.0 + pedal.pot_center.val*2900.0;
     my_delay.set_length_ms(new_length_ms);
+
+    // When we change the delay lenght with a pot, also update the flashing light
     pedal.set_tap_blink_rate_ms(new_length_ms);
   }    
   
