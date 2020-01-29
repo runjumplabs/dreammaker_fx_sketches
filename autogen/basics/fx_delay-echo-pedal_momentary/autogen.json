@@ -1,1 +1,1 @@
-{"category": "..", "modules": ["fx_delay", "fx_gain", "fx_mixer_2"], "fn": "fx_delay-echo-pedal_momentary.ino", "ino_path": "../autogen/basics/fx_delay-echo-pedal_momentary/fx_delay-echo-pedal_momentary.ino", "path": "../autogen/basics/fx_delay-echo-pedal_momentary/"}
+{"category": "..", "modules": ["fx_delay", "fx_gain", "fx_mixer_2"], "fn": "fx_delay-echo-pedal_momentary.ino", "ino_path": "../sketches/basics/fx_delay-echo-pedal_momentary/fx_delay-echo-pedal_momentary.ino", "path": "../autogen/basics/fx_delay-echo-pedal_momentary/"}
