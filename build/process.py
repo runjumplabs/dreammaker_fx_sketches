@@ -22,11 +22,24 @@ for root, subdirs, files in os.walk(rootdir):
             # Process headers and create json
             with open(sketch_path, 'r') as file:
                 source = file.read()
-                result = {}
+                result = {}                
 
+                # Meta data in comments
                 delimiters = ["Effect name\:","Effect description\:","Left pot label\:","Left pot function\:","Center pot label\:","Center pot function\:","Right pot label\:","Right pot function\:","Left footswitch label\:","Left footswitch function\:","Right footswitch label\:","Right footswitch function\:","Youtube Url\:","Soundcloud Url\:","Created by\:","DreamMakerFx package version\:", "Sketch version\:","\*\/"]
-                titles = ["name","description","left-pot-label","left-pot-function","center-pot-label","center-pot-function","right-pot-label","right-pot-function","left-switch-label","left-switch-function","right-switch-label","right-switch-function","youtube-url","soundcloud-url","creator","package-version","sketch-version"]
+                titles = ["name","description","left-pot-label","left-pot-function","center-pot-label","center-pot-function","right-pot-label","right-pot-function","left-switch-label","left-switch-function","right-switch-label","right-switch-function","youtube-url","soundcloud-url","creator","package-version","sketch-version"]                
                 
+                # Assign category based on directory
+                result['category'] = this_data['path'].split("/")[0]
+
+                # Determine what mods this effect uses
+                fx_mods = ["fx_adsr_envelope","fx_biquad_filter","fx_compressor","fx_delay","fx_destructor","fx_envelope_tracker","fx_gain","fx_looper","fx_mixer_2","fx_mixer_3","fx_mixer_4","fx_octave","fx_oscillator","fx_phase_shifter","fx_pitch_shift","fx_ring_mod","fx_slicer","fx_variable_delay"]
+                result['modules'] = []
+                for fx_mod in fx_mods:
+                    a = re.findall(fx_mod, source)
+                    if (len(a) > 0):
+                        result['modules'].append(fx_mod)
+
+
                 for i, title in enumerate(titles):
                     delim = delimiters[i]
                     delim_next = delimiters[i+1]
@@ -52,7 +65,10 @@ for root, subdirs, files in os.walk(rootdir):
                 this_data['compiles'] = True
             else:
                 this_data['compiles'] = False
+
             # Create HTML file
+            if (os.path.isfile(root+"/autogen_syntax.html")):
+                os.remove(root+"/autogen_syntax.html")
             args = ['node','syntax.js',sketch_path, root+"/autogen_syntax.html"]
             if True:
                 subprocess.call(args)

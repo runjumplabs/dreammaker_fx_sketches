@@ -1,0 +1,119 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Tremelo example using amplitude modulator 
+
+Effect description:  This is an example that shows how to use the fx_amplitude_mod
+effect to create a tremelo pedal effects.  The ADSR envelope standads for attack-decay-
+sustain-release and controls how quickly a note fades and out.  The sketch also
+demonstrates how to route the new note pedal event to the ADSR envelope so each time 
+you play a new note, the ADSR envelope is applied.
+
+Left pot label: Depth
+Left pot function: The depth of the tremelo effect
+
+Center pot label: Modulation rate
+Center pot function: Rate of amplitude modulation
+
+Right pot label: Type of modulation
+Right pot function: From counterclockwise to clockwise is sine -&gt; triangle -&gt; square -&gt; random
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap rate
+Right footswitch function: Tap this switch at a tempo to set the rate of the tremelo
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/</span>  
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">// Add your fx module declarations here</span>
+<span class="hljs-function">fx_amplitude_mod  <span class="hljs-title">tremy</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,       <span class="hljs-comment">// Rate is 1.0Hz (1 cycle per second)</span>
+                        <span class="hljs-number">0.5</span>,       <span class="hljs-comment">// Initial depth is 0.5 (50% volume reduction)</span>
+                        <span class="hljs-number">0.0</span>,       <span class="hljs-comment">// Initial phase is 0 degrees</span>
+                        OSC_SINE,  <span class="hljs-comment">// Sine oscillator</span>
+                        <span class="hljs-literal">false</span>)</span></span>;    <span class="hljs-comment">// Not using an external oscillator</span>
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init();
+
+  <span class="hljs-comment">// Route audio from instrument -&gt; fx_amplitude_mod -&gt; amp</span>
+  pedal.route_audio(pedal.instr_in, tremy.input);
+  pedal.route_audio(tremy.output, pedal.amp_out);  
+
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Right foot switch is tap loop length</span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// If new tempo has been tapped in, use that to control tremelo rate</span>
+  <span class="hljs-keyword">if</span> (pedal.new_tap_interval()) { 
+    tremy.set_rate_hz(pedal.get_tap_freq_hz());
+  } 
+
+  <span class="hljs-comment">// Left pot controls depth</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    tremy.set_depth(pedal.pot_left.val);     
+  } 
+
+  <span class="hljs-comment">// Center pot controls rate</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    <span class="hljs-keyword">float</span> rate_hz = pedal.pot_center.val* <span class="hljs-number">10.0</span>;
+    pedal.set_tap_blink_rate_hz(rate_hz);
+    tremy.set_rate_hz(rate_hz);     
+  } 
+
+  <span class="hljs-comment">// Right pot sets the oscillator type</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-keyword">if</span> (pedal.pot_right.val &lt; <span class="hljs-number">0.25</span>) {
+      tremy.set_lfo_type(OSC_SINE);
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pedal.pot_right.val &lt; <span class="hljs-number">0.5</span>) {
+      tremy.set_lfo_type(OSC_TRIANGLE);
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pedal.pot_right.val &lt; <span class="hljs-number">0.75</span>) {
+      tremy.set_lfo_type(OSC_SQUARE_SOFT);
+    } <span class="hljs-keyword">else</span> {
+      tremy.set_lfo_type(OSC_RANDOM);
+    }      
+  }
+
+   <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();  
+  
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

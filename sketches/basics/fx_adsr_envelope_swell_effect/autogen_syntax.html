@@ -1,0 +1,105 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Swell 
+
+Effect description:  This is an example that shows how to use the fx_adsr_envelope
+effect to create a swell-like effects.  The ADSR envelope standads for attack-decay-
+sustain-release and controls how quickly a note fades and out.  The sketch also
+demonstrates how to route the new note pedal event to the ADSR envelope so each time 
+you play a new note, the ADSR envelope is applied.
+
+Left pot label: Nothing
+Left pot function: Nothing
+
+Center pot label: Nothing
+Center pot function: Nothing
+
+Right pot label: Nothing
+Right pot function: Nothing
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Nothing
+Right footswitch function: Nothing
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/</span> 
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">// Add your fx module declarations here</span>
+<span class="hljs-function">fx_adsr_envelope  <span class="hljs-title">env</span><span class="hljs-params">(<span class="hljs-number">250.0</span>,  <span class="hljs-comment">// Attack is 250ms</span>
+                      <span class="hljs-number">10.0</span>,   <span class="hljs-comment">// Decay is 10ms</span>
+                      <span class="hljs-number">10.0</span>,   <span class="hljs-comment">// Sustain is 10ms</span>
+                      <span class="hljs-number">500.0</span>,  <span class="hljs-comment">// Release is 500ms </span>
+                      <span class="hljs-number">1.0</span>)</span></span>;   <span class="hljs-comment">// Full volume</span>
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+  
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init();
+
+  <span class="hljs-comment">// Route audio through effects from pedal.instr_in to pedal.amp_out</span>
+  pedal.route_audio(pedal.instr_in, env.input);
+  pedal.route_audio(env.output, pedal.amp_out);  
+
+  pedal.route_control(pedal.new_note, env.start);
+
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your main code here, to run repeatedly:</span>
+
+  <span class="hljs-comment">// Left pot control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    <span class="hljs-comment">// Left pot value is: pedal.pot_left.val</span>
+  } 
+
+  <span class="hljs-comment">// Center pot control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    <span class="hljs-comment">// Center pot value is: pedal.pot_center.val</span>
+  } 
+
+  <span class="hljs-comment">// Right pot set control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-comment">// Right pot value is: pedal.pot_right.val</span>
+  }
+
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service(); 
+  
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

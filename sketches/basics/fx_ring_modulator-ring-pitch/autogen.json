@@ -1,1 +1,1 @@
-{"fn": "fx_ring_modulator-ring-pitch.ino", "ino_path": "basics/fx_ring_modulator-ring-pitch/fx_ring_modulator-ring-pitch.ino", "path": "basics/fx_ring_modulator-ring-pitch/"}
+{"category": "basics", "modules": ["fx_biquad_filter", "fx_ring_mod"], "fn": "fx_ring_modulator-ring-pitch.ino", "ino_path": "basics/fx_ring_modulator-ring-pitch/fx_ring_modulator-ring-pitch.ino", "path": "basics/fx_ring_modulator-ring-pitch/"}

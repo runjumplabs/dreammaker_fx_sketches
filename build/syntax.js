@@ -3,49 +3,29 @@ var fs = require('fs');
 
 hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'));
 
-path = __dirname+"/html_template.html"
-fs.access(path, fs.constants.R_OK | fs.constants.W_OK, (err) => {
-    if (err) {
-        console.log("%s doesn't exist", path);
-    } else {
-        console.log('can read/write %s', path);
-    }
-});
+// Open HTML template
+html_template = fs.readFileSync(__dirname+"/html_template.html", 'utf8');
+if (html_template.length == 0) {
+	console.log("ERROR: html template did not open successfully")
+}
 
-html_template = ""
-fs.readFile(__dirname+"/html_template.html", 'utf8', function (err, data) {
-	if (err) {
-		console.log("could not open template")
-		.exit()
-	}
-	html_template = data
-});
-
+// Ensure all of our arguments are present
 if (process.argv.length < 4) {
 	console.log("Missing Arduino file name");	
 } else {
 	var filename_in = process.argv[2];
 	var filename_out = process.argv[3];
 
-	console.log("File in: "+filename_in)
-	console.log("File out: "+filename_out)
-	fs.readFile(filename_in, 'utf8', function (err, data) {
-	  	if (err) {
-	    	console.log("Could not open input file")
-		} else {
-			
-			highlightedCode = hljs.highlight('cpp', data).value;
-			highlightedCode = html_template.replace("__CODE__",highlightedCode);
+	// console.log("File in: "+filename_in)
+	// console.log("File out: "+filename_out)
+	var source_code = fs.readFileSync(filename_in, 'utf8');
 
-			fs.writeFile(filename_out, highlightedCode, (err) => {
-			    if (err) {
-			    	console.log("Could not write to output file")
-			    } else {			    	
-				    console.log('Success!');
-			    }
-
-			});
-		}
-	});
-
+	if (source_code.length == 0) {
+    	console.log("Could not open input file")
+	} else {
+		
+		highlightedCode = hljs.highlight('cpp', source_code).value;
+		highlightedCode = html_template.replace("__CODE__",highlightedCode);
+		fs.writeFileSync(filename_out, highlightedCode);
+	}
 }
