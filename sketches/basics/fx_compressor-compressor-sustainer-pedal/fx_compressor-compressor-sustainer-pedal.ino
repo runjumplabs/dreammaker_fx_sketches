@@ -31,6 +31,7 @@ Sketch version: 1.0
 */    
 #include <dreammakerfx.h>
 
+// Add your fx module declarations here
 fx_compressor compressor( -30.0,    // Threshold in dB
                           8,        // Ratio (1:8)
                           10.0,     // Attack (10ms)

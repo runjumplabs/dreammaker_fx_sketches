@@ -32,7 +32,7 @@ for root, subdirs, files in os.walk(rootdir):
                     delim_next = delimiters[i+1]
 
                     regex = "\\n"+delim+"(.*?)\\n"+delim_next
-                    print(regex)
+                    # print(regex)
                     a = re.findall(regex, source, flags=re.DOTALL)
                     if (len(a) > 0):
                         result[title] = a[0].replace("\n"," ").replace("\r"," ").strip()
