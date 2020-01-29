@@ -1,0 +1,105 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Parametric filter 
+
+Effect description:  This is an example that shows how to use the fx_biquad_filter
+effect to create a parametric filter.  
+
+Left pot label: Frequency
+Left pot function: The filter center frequency
+
+Center pot label: Gain
+Center pot function: The gain of the filter (-12dB full counterclockwise to +12dB full clockwise)
+
+Right pot label: Width
+Right pot function: The width / resonance of the filter
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Nothing
+Right footswitch function: Nothing
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/</span>   
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">// Add your fx module declarations here</span>
+<span class="hljs-function">fx_biquad_filter <span class="hljs-title">parametric</span><span class="hljs-params">(<span class="hljs-number">500.0</span>,                <span class="hljs-comment">// Initial center frequency</span>
+                            <span class="hljs-number">1.0</span>,                  <span class="hljs-comment">// standard resonance</span>
+                            <span class="hljs-number">0.0</span>,                  <span class="hljs-comment">// Set initial gain at 0 (no effect)</span>
+                            BIQUAD_TYPE_PEAKING,  <span class="hljs-comment">// Peaking filter</span>
+                            TRANS_VERY_SLOW,      <span class="hljs-comment">// Slow transitions so we don't hear any zipper noise from pots</span>
+                            BIQUAD_ORDER_4)</span></span>;      <span class="hljs-comment">// 4th order filter (medium intense filtering effect)</span>
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init();
+
+  <span class="hljs-comment">// Route audio</span>
+  pedal.route_audio(pedal.instr_in, parametric.input);
+  pedal.route_audio(parametric.output, pedal.amp_out);  
+
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Right foot switch is tap modulation rate </span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your main code here, to run repeatedly:</span>
+ 
+  <span class="hljs-comment">// Left pot controls depth of the effect</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    parametric.set_freq(<span class="hljs-number">100.0</span> + pedal.pot_left.val*<span class="hljs-number">1200</span>);     
+  } 
+
+  <span class="hljs-comment">// Center pot filter gain from -12dB to 12dB</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    parametric.set_gain(<span class="hljs-number">-12.0</span> + pedal.pot_center.val*<span class="hljs-number">24.0</span>);
+  } 
+
+  <span class="hljs-comment">// Right pot controls filter width</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+      parametric.set_resonance(<span class="hljs-number">0.25</span> + pedal.pot_right.val*<span class="hljs-number">3.0</span>);
+  }
+
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();  
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

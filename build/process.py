@@ -37,6 +37,8 @@ for root, subdirs, files in os.walk(rootdir):
                     if (len(a) > 0):
                         result[title] = a[0].replace("\n"," ").replace("\r"," ").strip()
 
+                    result.update(this_data)
+
                     with open(os.path.join(root,'autogen.json'), 'w') as outfile:
                         json.dump(result, outfile)
 
@@ -45,6 +47,11 @@ for root, subdirs, files in os.walk(rootdir):
             os.system('/Applications/Arduino.app/Contents/MacOS/Arduino --pref build.path=../temp --verify '+sketch_path)
             # Create UF2 file
             os.system('python3 uf2conv.py ../temp/'+file_root+".bin -o "+root+"/CURRENT.UF2 -f SAMD51 -b 0x4000")
+
+            if os.path.isfile(root+"/CURRENT.UF2"):
+                this_data['compiles'] = True
+            else:
+                this_data['compiles'] = False
             # Create HTML file
             args = ['node','syntax.js',sketch_path, root+"/autogen_syntax.html"]
             if True:

@@ -1,0 +1,111 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Compressor / sustainer pedal
+
+Effect description:  This is an example that shows how to use the fx_compressor 
+effect to create a compressor sustainer pedal
+
+Left pot label: Threshold
+Left pot function: The threshold where compression kicks in
+
+Center pot label: Compression Rate
+Center pot function: The amount to compress after threshold crossed
+
+Right pot label: Gain
+Right pot function: The output gain of the compressor
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Nothing
+Right footswitch function: Nothing
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/</span>    
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">// Add your fx module declarations here</span>
+<span class="hljs-function">fx_compressor <span class="hljs-title">compressor</span><span class="hljs-params">( <span class="hljs-number">-30.0</span>,    <span class="hljs-comment">// Threshold in dB</span>
+                          <span class="hljs-number">8</span>,        <span class="hljs-comment">// Ratio (1:8)</span>
+                          <span class="hljs-number">10.0</span>,     <span class="hljs-comment">// Attack (10ms)</span>
+                          <span class="hljs-number">100.0</span>,    <span class="hljs-comment">// Release (100ms)</span>
+                          <span class="hljs-number">2.0</span>)</span></span>;     <span class="hljs-comment">// Output gain (2x);</span>
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init();
+
+  <span class="hljs-comment">// Route audio from instrument -&gt; fx_compressor -&gt; amp</span>
+  pedal.route_audio(pedal.instr_in, compressor.input);
+  pedal.route_audio(compressor.output, pedal.amp_out);
+
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+    
+}
+
+<span class="hljs-comment">// Use this to save our gain setting for when gain boost footswitched released</span>
+<span class="hljs-keyword">float</span> pot_gain_setting = <span class="hljs-number">0</span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// The right footswitch is being used as a momentary gain boost of 2x</span>
+  <span class="hljs-keyword">if</span> (pedal.button_pressed(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>)) {
+    compressor.set_output_gain(pot_gain_setting*<span class="hljs-number">2.0</span>);      
+  }
+  <span class="hljs-keyword">if</span> (pedal.button_released(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>)) {
+    compressor.set_output_gain(pot_gain_setting);
+  }
+
+  <span class="hljs-comment">// Left pot changes threshold from -12dB to -72dB</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+      compressor.set_threshold(<span class="hljs-number">-12.0</span> - (pedal.pot_left.val*<span class="hljs-number">60</span>));
+  } 
+
+  <span class="hljs-comment">// Center pot sets compression ratio</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    compressor.set_ratio(pedal.pot_center.val*<span class="hljs-number">100.0</span>);
+  } 
+
+  <span class="hljs-comment">// Right pot controls compressor output gain</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) { 
+    pot_gain_setting = pedal.pot_right.val*<span class="hljs-number">6</span>;
+    compressor.set_output_gain(pot_gain_setting);
+  } 
+
+  <span class="hljs-comment">// Service </span>
+  pedal.service();
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>
