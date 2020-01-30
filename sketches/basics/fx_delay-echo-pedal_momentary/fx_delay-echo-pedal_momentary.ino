@@ -7,7 +7,8 @@ Effect name: Momentary delay pedal
 Effect description:  This is an example that shows how to use the fx_delay
 effect to create a delay effect that can be activated with momentarily with a 
 footswitch like in dub songs.  Regular music and then you hold down the left
-footswitch and things will be delayed.  
+footswitch and things will be delayed.  Release the footswitch but the delays
+still ring out.
 
 Left pot label: Feedback 
 Left pot function: Basically how long the echo lasts before dying out

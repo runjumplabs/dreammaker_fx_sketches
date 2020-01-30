@@ -67,11 +67,13 @@ for root, subdirs, files in os.walk(rootdir):
             # Create binary
             os.system('/Applications/Arduino.app/Contents/MacOS/Arduino --pref build.path=../temp --verify '+sketch_path)
             # Create UF2 file
-            os.system('python3 uf2conv.py ../temp/'+file_root+".bin -o "+root_output+"/CURRENT.UF2 -f SAMD51 -b 0x4000")
-
-            if os.path.isfile(root_output+"/CURRENT.UF2"):
-                this_data['compiles'] = True
-            else:
+            success = False
+            if os.path.isfile('../temp/'+file_root+".bin"):
+                os.system('python3 uf2conv.py ../temp/'+file_root+".bin -o "+root_output+"/CURRENT.UF2 -f SAMD51 -b 0x4000")
+                if os.path.isfile(root_output+"/CURRENT.UF2"):
+                    this_data['compiles'] = True
+                    success = True
+            if not success:
                 this_data['compiles'] = False
 
             # Create HTML file
@@ -92,6 +94,10 @@ for root, subdirs, files in os.walk(rootdir):
 
 with open('../autogen/all_data_autogen.json', 'w') as outfile:
     json.dump(alldata, outfile)
+
+
+os.system("git commit -a -m \"Auto-gen update\"")
+os.system("git push")
             
 
 

@@ -13,21 +13,43 @@
 </head>
 <body>
 
-<pre><code class="arduino"><span class="hljs-comment">/**
- * This is an implementation of a typical delay / echo pedal.   
- * 
- * Left pot: "feedback" - basically how long the echo lasts before dying out
- * Center pot: delay time - how far apart the echos are (0.1 to 3 seconds)
- * Right pot: wet/dry mix - the mix of clean audio and the echo effect (set to center for an even mix of effect and clean)
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: tap - tap it a few times at a set interval and the delay will lock on
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_delay block
- * 
- * 
- */</span>
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Momentary delay pedal
+
+Effect description:  This is an example that shows how to use the fx_delay
+effect to create a delay effect that can be activated with momentarily with a 
+footswitch like in dub songs.  Regular music and then you hold down the left
+footswitch and things will be delayed.  Release the footswitch but the delays
+still ring out.
+
+Left pot label: Feedback 
+Left pot function: Basically how long the echo lasts before dying out
+
+Center pot label: Delay time
+Center pot function: How far apart the echos are (0.1 to 3 seconds)
+
+Right pot label: Wet/dry mix 
+Right pot function: The mix of clean audio and the echo effect.  All the way left 
+is no effect at all and all the way right is effect only with none of the original 
+dry signal.  Right in the middle (12:00) is a nice mix of the original dry signal
+and the echo signal
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap delay
+Right footswitch function: Tap it a few times at a set interval and the delay will lock on
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/</span>  
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
 
 <span class="hljs-function">fx_delay    <span class="hljs-title">my_delay</span><span class="hljs-params">(<span class="hljs-number">1000.0</span>, <span class="hljs-number">3000.0</span>, <span class="hljs-number">0.7</span>, <span class="hljs-number">0.0</span>, <span class="hljs-number">1.0</span>, <span class="hljs-literal">false</span>)</span></span>;

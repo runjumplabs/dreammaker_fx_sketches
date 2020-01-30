@@ -12,6 +12,40 @@
  * It's provided as an example of how to use the various features of the fx_variable_delay block
  * 
  */
+
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Vibrato Pedal 
+
+Effect description:  This is an example that shows how to use the fx_variable_delay
+effect to create a vibrato effect.  A vibrato effect changes the pitch of the incoming
+signal based on the value of an LFO (low-frequency oscillator). 
+
+Left pot label: Depth 
+Left pot function: Depth of the vibrato effect
+
+Center pot label: Rate
+Center pot function: Modulation / vibrato rate
+
+Right pot label: LFO type
+Right pot function: The type of LFO waveform used to change the pitch.
+Full left is sine, center is triangle and right is random
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap tempo
+Right footswitch function: Tap it a few times to set the vibrato tempo
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/   
 #include <dreammakerfx.h>
 
 fx_variable_delay vibrato(1.0,          // Initial rate of 1 Hz (1 cycle / second)
