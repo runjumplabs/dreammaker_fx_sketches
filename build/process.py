@@ -23,8 +23,8 @@ for root, subdirs, files in os.walk(rootdir):
             this_data['fn'] = filename
             file_root = filename
             sketch_path = os.path.join(root, filename)
-            this_data['ino_path'] = os.path.join(root, filename)
-            this_data['path'] = os.path.join(root_output, filename).replace(filename,"")
+            this_data['ino_path'] = os.path.join(root, filename).replace("..","")
+            this_data['path'] = os.path.join(root_output, filename).replace(filename,"").replace("..","")
 
             # Process headers and create json
             with open(sketch_path, 'r') as file:
