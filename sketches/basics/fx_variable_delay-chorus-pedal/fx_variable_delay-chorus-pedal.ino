@@ -1,3 +1,33 @@
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Basic Chorus Pedal
+Effect description:  This pedal is a chorus pedal that has multiple types of modulators
+controlling the chorus effect that can be selected with the right pot.
+
+Left pot label: Depth
+Left pot function: Sets the depth of the chorus effect
+
+Center pot label: Rate
+Center pot function: Sets the rate of the LFO (low frequency oscillator) controlling this effect
+
+Right pot label: Mod type
+Right pot function: Sets the shape of the LFO waveform (from left to right: sine, triangle, random)
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap rate set
+Right footswitch function: Tap this switch to set the rate of the effect
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package: 1.4.2
+Version: 1.0
+*/
 #include <dreammakerfx.h>
 
 fx_variable_delay chorus (1.0,          // Initial rate of 1 Hz (1 cycle / second)
