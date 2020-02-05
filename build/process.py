@@ -30,12 +30,12 @@ for root, subdirs, files in os.walk(rootdir):
             sketch_path = os.path.join(root, filename)
             this_data['ino_path'] = os.path.join(root, filename).replace("..","")
             this_data['path'] = os.path.join(root_output, filename).replace(filename,"").replace("..","")
+            this_data['html_path'] = html_html_root + sketch_path.replace("../sketches","").replace(filename,"autogen_syntax.html")
 
             if False:
                 print(sketch_path)
                 print(html_html_root)
                 print(filename)
-                this_data['html_path'] = html_html_root + sketch_path.replace("../sketches","").replace(filename,"autogen_syntax.html")
                 print(this_data['html_path'])
                 exit()
 
