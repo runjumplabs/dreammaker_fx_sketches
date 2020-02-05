@@ -13,7 +13,37 @@
 </head>
 <body>
 
-<pre><code class="arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Basic Chorus Pedal
+Effect description:  This pedal is a chorus pedal that has multiple types of modulators
+controlling the chorus effect that can be selected with the right pot.
+
+Left pot label: Depth
+Left pot function: Sets the depth of the chorus effect
+
+Center pot label: Rate
+Center pot function: Sets the rate of the LFO (low frequency oscillator) controlling this effect
+
+Right pot label: Mod type
+Right pot function: Sets the shape of the LFO waveform (from left to right: sine, triangle, random)
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap rate set
+Right footswitch function: Tap this switch to set the rate of the effect
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package: 1.4.2
+Version: 1.0
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
 
 <span class="hljs-function">fx_variable_delay <span class="hljs-title">chorus</span> <span class="hljs-params">(<span class="hljs-number">1.0</span>,          <span class="hljs-comment">// Initial rate of 1 Hz (1 cycle / second)</span>
                           <span class="hljs-number">0.1</span>,          <span class="hljs-comment">// Initial depth of 0.1</span>

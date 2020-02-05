@@ -1,5 +1,5 @@
 /**
- * This is an implementation of a typical flanger pedal.   
+ * This is an implementation of a typical flanger pedal.  
  * 
  * Left pot: depth - the depth of the flanger effect
  * Center pot: delay time - modulation rate
@@ -13,6 +13,38 @@
  * It's provided as an example of how to use the various features of the fx_variable_delay block
  * 
  */
+
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+
+Effect name: Basic Flanger
+Effect description:  This is an implementation of a typical flanger pedal
+
+Left pot label: Depth
+Left pot function: The depth of the flanger effect
+
+Center pot label: Rate
+Center pot function: The rate of the LFO (low-frequency oscillator) controlling the flanger
+
+Right pot label: Feedback
+Right pot function: Feedback of the effect.  When the pot is at 12:00, the 
+                    feedback is zero.  Full left is -1.0 and full right is 1.0.
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap rate
+Right footswitch function: Tap this switch to set the rate of the flanger
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package: 1.4.2
+Version: 1.0
+*/ 
 #include <dreammakerfx.h>
 
 fx_variable_delay flangey(1.0,            // Initial oscillator rate of 1Hz (1 cycle / second)

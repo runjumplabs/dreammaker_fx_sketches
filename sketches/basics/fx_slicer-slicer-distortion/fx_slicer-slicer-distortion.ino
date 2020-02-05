@@ -1,15 +1,33 @@
-/**
- * Demonstrates the slicer effect 
- * 
- * Left pot: Dry / clean signal mix
- * Center pot: Pitch shift setting (oct down, fifth down, third down, third up, fifth up, octave up)
- * Right pot: wet / octave signal mix
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: nothing
- * 
- * 
- */
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Slicer Distortion
+Effect description:  Uses the slicer effect to distort the incoming signal, chop 
+it up and send through different filters
+
+Left pot label: Filter resonance
+Left pot function: Sets the resonance for the filters 
+
+Center pot label: Drive
+Center pot function: Sets the drive of the distortion 
+
+Right pot label: Speed
+Right pot function: Sets the speed of the slicer
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: None
+Right footswitch function: None
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package: 1.4.2
+Version: 1.0
+*/ 
 #include <dreammakerfx.h>
 
 fx_slicer       slice4(750.0, 4);     
