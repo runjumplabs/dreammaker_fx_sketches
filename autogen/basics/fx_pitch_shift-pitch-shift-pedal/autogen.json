@@ -1,1 +1,1 @@
-{"category": "", "modules": ["fx_gain", "fx_mixer_2", "fx_pitch_shift"], "fn": "fx_pitch_shift-pitch-shift-pedal.ino", "ino_path": "/sketches/basics/fx_pitch_shift-pitch-shift-pedal/fx_pitch_shift-pitch-shift-pedal.ino", "path": "/autogen/basics/fx_pitch_shift-pitch-shift-pedal/"}
+{"category": "Basics", "modules": ["fx_gain", "fx_mixer_2", "fx_pitch_shift"], "fn": "fx_pitch_shift-pitch-shift-pedal.ino", "ino_path": "/sketches/basics/fx_pitch_shift-pitch-shift-pedal/fx_pitch_shift-pitch-shift-pedal.ino", "path": "/autogen/basics/fx_pitch_shift-pitch-shift-pedal/"}

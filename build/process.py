@@ -36,7 +36,13 @@ for root, subdirs, files in os.walk(rootdir):
                 titles = ["name","description","left-pot-label","left-pot-function","center-pot-label","center-pot-function","right-pot-label","right-pot-function","left-switch-label","left-switch-function","right-switch-label","right-switch-function","youtube-url","soundcloud-url","creator","package-version","sketch-version"]                
                 
                 # Assign category based on directory
-                result['category'] = this_data['path'].split("/")[0]
+                p = this_data['path'].split("/")
+                if p[2] == "basics":
+                    result['category'] = "Basics"
+                elif p[2] == "categories":
+                    result['category'] = p[3].title()
+
+                print(result['category'])
 
                 # Determine what mods this effect uses
                 fx_mods = ["fx_adsr_envelope","fx_biquad_filter","fx_compressor","fx_delay","fx_destructor","fx_envelope_tracker","fx_gain","fx_looper","fx_mixer_2","fx_mixer_3","fx_mixer_4","fx_octave","fx_oscillator","fx_phase_shifter","fx_pitch_shift","fx_ring_mod","fx_slicer","fx_variable_delay"]
