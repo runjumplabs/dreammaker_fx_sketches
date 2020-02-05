@@ -1,4 +1,5 @@
 from pathlib import Path
+from shutil import copyfile
 import json
 from os import listdir
 from os.path import isfile, join
@@ -10,6 +11,8 @@ import subprocess
 
 alldata = []
 rootdir = '../sketches/'
+html_web_dir = "../../dreammaker_fx_web/sketches/"
+html_html_root = "https://runjumplabs.github.io/dreammaker_fx/sketches"
 for root, subdirs, files in os.walk(rootdir):
     for filename in files:
         if filename[-4:] == ".ino" and filename != "dreammaker_fx_template.ino":
@@ -17,7 +20,9 @@ for root, subdirs, files in os.walk(rootdir):
             root_output = root.replace("/sketches/","/autogen/")
             if (not os.path.isdir(root_output)):
                 Path(root_output).mkdir(parents=True, exist_ok=True)
-
+            html_output = root_output.replace("../autogen/",html_web_dir)
+            if (not os.path.isdir(html_output)):
+                Path(html_output).mkdir(parents=True, exist_ok=True)
 
             this_data ={}
             this_data['fn'] = filename
@@ -25,6 +30,15 @@ for root, subdirs, files in os.walk(rootdir):
             sketch_path = os.path.join(root, filename)
             this_data['ino_path'] = os.path.join(root, filename).replace("..","")
             this_data['path'] = os.path.join(root_output, filename).replace(filename,"").replace("..","")
+
+            if False:
+                print(sketch_path)
+                print(html_html_root)
+                print(filename)
+                this_data['html_path'] = html_html_root + sketch_path.replace("../sketches","").replace(filename,"autogen_syntax.html")
+                print(this_data['html_path'])
+                exit()
+
 
             # Process headers and create json
             with open(sketch_path, 'r') as file:
@@ -90,6 +104,8 @@ for root, subdirs, files in os.walk(rootdir):
                 subprocess.call(args)
             else:
                 subprocess.call('node node syntax.js',sketch_path, root_output+"/autogen_syntax.html")
+            copyfile(root_output+"/autogen_syntax.html", html_output+"/autogen_syntax.html")
+
 
             #success = execute_js('syntax.js '+sketch_path+" "+root+"/autogen_syntax.html")
             # Reset temp directory
