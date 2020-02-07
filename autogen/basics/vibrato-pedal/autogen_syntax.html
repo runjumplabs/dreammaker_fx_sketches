@@ -1,0 +1,120 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Vibrato Pedal 
+
+Effect description:  This is an example that shows how to use the fx_variable_delay
+effect to create a vibrato effect.  A vibrato effect changes the pitch of the incoming
+signal based on the value of an LFO (low-frequency oscillator). 
+
+Left pot label: Depth 
+Left pot function: Depth of the vibrato effect
+
+Center pot label: Rate
+Center pot function: Modulation / vibrato rate
+
+Right pot label: LFO type
+Right pot function: The type of LFO waveform used to change the pitch.
+Full left is sine, center is triangle and right is random
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap tempo
+Right footswitch function: Tap it a few times to set the vibrato tempo
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.4.2
+Sketch version: 1.0
+*/</span>   
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-function">fx_variable_delay <span class="hljs-title">vibrato</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,          <span class="hljs-comment">// Initial rate of 1 Hz (1 cycle / second)</span>
+                          <span class="hljs-number">0.5</span>,          <span class="hljs-comment">// Initial depth of 0.5</span>
+                          <span class="hljs-number">0.0</span>,          <span class="hljs-comment">// No feedback needed for vibrato</span>
+                          <span class="hljs-number">100.0</span>,        <span class="hljs-comment">// Delay line length (also effects depth) in milliseconds</span>
+                          <span class="hljs-number">0.0</span>,          <span class="hljs-comment">// Clean mix set to 0 since we just want to hear pitch shifted</span>
+                          <span class="hljs-number">1.0</span>,          <span class="hljs-comment">// Delayed mix to 1.0</span>
+                          OSC_SINE,     <span class="hljs-comment">// Initial oscillator is sine wave</span>
+                          <span class="hljs-literal">false</span>)</span></span>;       <span class="hljs-comment">// Don't use an external signal for oscillator</span>
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+  pedal.init();
+
+  <span class="hljs-comment">// Route audio through vibrato </span>
+  pedal.route_audio(pedal.instr_in, vibrato.input);
+  pedal.route_audio(vibrato.output, pedal.amp_out);  
+
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Right foot switch is tap modulation rate </span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+
+  <span class="hljs-comment">// If new mod rate has been tapped in, use that to control vibrato rate</span>
+  <span class="hljs-keyword">if</span> (pedal.new_tap_interval()) { 
+    vibrato.set_rate_hz(pedal.get_tap_freq_hz());
+  } 
+
+  <span class="hljs-comment">// Left pot controls depth of the effect</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    vibrato.set_depth(pedal.pot_left.val);     
+  } 
+
+  <span class="hljs-comment">// Center pot controls rate</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    <span class="hljs-keyword">float</span> rate_hz = pedal.pot_center.val* <span class="hljs-number">6.0</span>;
+    pedal.set_tap_blink_rate_hz(rate_hz);
+    vibrato.set_rate_hz(rate_hz);     
+  } 
+
+  <span class="hljs-comment">// Right pot sets the oscillator type</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-keyword">if</span> (pedal.pot_right.val &lt; <span class="hljs-number">0.33</span>) {
+      vibrato.set_lfo_type(OSC_SINE);
+    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pedal.pot_right.val &lt; <span class="hljs-number">0.66</span>) {
+      vibrato.set_lfo_type(OSC_TRIANGLE);
+    } <span class="hljs-keyword">else</span> {
+      vibrato.set_lfo_type(OSC_RANDOM);
+    }
+  }
+
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();  
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

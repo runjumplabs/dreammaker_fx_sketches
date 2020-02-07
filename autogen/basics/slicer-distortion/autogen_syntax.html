@@ -1,0 +1,119 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Slicer Distortion
+Effect description:  Uses the slicer effect to distort the incoming signal, chop 
+it up and send through different filters
+
+Left pot label: Filter resonance
+Left pot function: Sets the resonance for the filters 
+
+Center pot label: Drive
+Center pot function: Sets the drive of the distortion 
+
+Right pot label: Speed
+Right pot function: Sets the speed of the slicer
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: None
+Right footswitch function: None
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package: 1.4.2
+Version: 1.0
+*/</span> 
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-function">fx_slicer       <span class="hljs-title">slice4</span><span class="hljs-params">(<span class="hljs-number">750.0</span>, <span class="hljs-number">4</span>)</span></span>;     
+
+fx_mixer_4      mix4;
+<span class="hljs-function">fx_destructor   <span class="hljs-title">tube_clip</span><span class="hljs-params">(<span class="hljs-number">0.1</span>,           <span class="hljs-comment">// Clipping level (from 0 to 1.0) - lower is heavier distortion</span>
+                          <span class="hljs-number">16.0</span>,           <span class="hljs-comment">// Input drive </span>
+                          SMOOTH_CLIP)</span></span>;  <span class="hljs-comment">// Distortion function = fuzz</span>
+
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt1</span><span class="hljs-params">(<span class="hljs-number">200</span>, <span class="hljs-number">3.0</span>, BIQUAD_TYPE_LPF)</span></span>;
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt2</span><span class="hljs-params">(<span class="hljs-number">800</span>, <span class="hljs-number">3.0</span>, BIQUAD_TYPE_LPF)</span></span>;
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt3</span><span class="hljs-params">(<span class="hljs-number">1100</span>, <span class="hljs-number">3.0</span>, BIQUAD_TYPE_LPF)</span></span>;
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt4</span><span class="hljs-params">(<span class="hljs-number">1800</span>, <span class="hljs-number">3.0</span>, BIQUAD_TYPE_LPF)</span></span>;
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init(<span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+   
+  pedal.route_audio(pedal.instr_in, tube_clip.input);
+  pedal.route_audio(tube_clip.output, slice4.input);
+ 
+  pedal.route_audio(slice4.output_1, filt1.input);
+  pedal.route_audio(slice4.output_2, filt2.input);
+  pedal.route_audio(slice4.output_3, filt3.input);
+  pedal.route_audio(slice4.output_4, filt4.input);
+
+  pedal.route_audio(filt1.output, mix4.input_1);
+  pedal.route_audio(filt2.output, mix4.input_2);
+  pedal.route_audio(filt3.output, mix4.input_3);
+  pedal.route_audio(filt4.output, mix4.input_4);
+  
+  pedal.route_audio(mix4.output, pedal.amp_out);
+
+  <span class="hljs-comment">// Reset the slicer position when a new note is played</span>
+  pedal.route_control(pedal.new_note, slice4.start);
+  
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+   <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// Left pot changes dry signal gain</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    filt1.set_resonance(<span class="hljs-number">1.0</span> + pedal.pot_left.val * <span class="hljs-number">5.0</span>);
+    filt2.set_resonance(<span class="hljs-number">1.0</span> + pedal.pot_left.val * <span class="hljs-number">5.0</span>);
+    filt3.set_resonance(<span class="hljs-number">1.0</span> + pedal.pot_left.val * <span class="hljs-number">5.0</span>);
+    filt4.set_resonance(<span class="hljs-number">1.0</span> + pedal.pot_left.val * <span class="hljs-number">5.0</span>);
+  }
+  
+  <span class="hljs-comment">// Center pot changes pitch shift amount</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    tube_clip.set_param_2(<span class="hljs-number">2.0</span> + pedal.pot_center.val * <span class="hljs-number">32</span>);
+  }  
+  
+  <span class="hljs-comment">// Right pot changes mix gain</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    slice4.set_period_ms(<span class="hljs-number">500.0</span> + <span class="hljs-number">1000</span> * (<span class="hljs-number">1.0</span> - pedal.pot_right.val));
+  }    
+  
+  <span class="hljs-comment">// Service pedal</span>
+  pedal.service();
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

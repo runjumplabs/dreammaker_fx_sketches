@@ -1,0 +1,131 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Describe a bit about how your effect works.  Feel free to use multiple lines, 
+just don't delete or change any of the field names. 
+
+Effect name: Polyphonic guitar synth pedal
+Effect description:  This is a polyphonic guitar synth meaning that it tracks
+multiple strings.  It uses an FM synth engine along with ADSR envelope generator
+and an output filter.  The pedal is configured by default to use a triangle
+(OSC_TRIANGLE) wave that is modulated with a sine wave (OSC_SINE).  However, lots
+of interesting sounds can be created by swapping these out with out types of oscillators
+(e.g. OSC_SQUARE, OSC_RAMP_POS, OSC_RAMP_NEG, OSC_RANDOM, etc).
+
+Left pot label: FM mod depth
+Left pot function: The depth of the FM mod in the synthesizer
+
+Center pot label: Attack time
+Center pot function: The attack time of the synth sound (i.e. how long it takes 
+to ramp to full volume when you play a new string)
+
+Right pot label: Modulation frequency
+Right pot function: The frequency of the FM modulator ranging from 0.25 x the note played
+to 4.25x.
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label:
+Right footswitch function: describe right footswitch function
+
+Youtube Url: 
+Soundcloud Url: https://soundcloud.com/dreammakerfx/polyphonic-synth-guitar-effect-on-dreammaker-fx
+
+Created by: DreamMaker
+DreamMakerFx package: 1.5.1
+Version: 1.0
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+
+<span class="hljs-comment">// Add your fx module declarations here</span>
+
+<span class="hljs-function">fx_instrument_synth <span class="hljs-title">synth</span><span class="hljs-params">(OSC_TRIANGLE,     <span class="hljs-comment">// Primary oscillator</span>
+                         OSC_RAMP_NEG,          <span class="hljs-comment">// FM mod oscillator</span>
+                         <span class="hljs-number">0.1</span>,               <span class="hljs-comment">// FM mod depth</span>
+                         <span class="hljs-number">1.0</span>,               <span class="hljs-comment">// Freq ratio (ratio of instrument frequency to synth frequency (1.0 = same)</span>
+                         <span class="hljs-number">2.0</span>,               <span class="hljs-comment">// FM mod frequency ratio (1.0 = same frequency as primary oscillator)</span>
+                         <span class="hljs-number">250.0</span>,             <span class="hljs-comment">// Attack time in milliseconds</span>
+                         <span class="hljs-number">3.0</span>,               <span class="hljs-comment">// Filter resonance</span>
+                         <span class="hljs-number">0.6</span>)</span></span>;              <span class="hljs-comment">// Filter response (0.0 to 1.0)</span>
+                         
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+   
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init(<span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+
+  <span class="hljs-comment">// Route audio through effects from pedal.instr_in to pedal.amp_out</span>
+  pedal.route_audio(synth.output, pedal.amp_out);  
+
+  <span class="hljs-comment">// Optionally use a bypass switch FOOTSWITCH_LEFT or FOOTSWITCH_RIGHT</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-keyword">if</span> (<span class="hljs-literal">true</span>) {
+      pedal.print_instance_stack();
+      pedal.print_routing_table();
+      pedal.print_param_tables();
+    }
+
+  <span class="hljs-comment">// Optionally use a tap tempo / delay switch</span>
+  <span class="hljs-comment">// Can also be FOOTSWITCH_LEFT or FOOTSWITCH_RIGHT but different than</span>
+  <span class="hljs-comment">// the bypass switch</span>
+  <span class="hljs-comment">// pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, true);</span>
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your main code here, to run repeatedly:</span>
+
+  <span class="hljs-comment">// Left pot control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    <span class="hljs-comment">// Left pot value is: pedal.pot_left.val</span>
+    synth.set_fm_mod_depth(pedal.pot_left.val);
+  } 
+
+  <span class="hljs-comment">// Center pot control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    <span class="hljs-comment">// Center pot value is: pedal.pot_center.val</span>
+    synth.set_attack_ms(<span class="hljs-number">25.0</span> + pedal.pot_center.val*<span class="hljs-number">975.0</span>);
+  } 
+
+  <span class="hljs-comment">// Right pot set control</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-comment">// Right pot value is: pedal.pot_right.val</span>
+    <span class="hljs-keyword">float</span> x = <span class="hljs-number">0.25</span> + round(pedal.pot_right.val * <span class="hljs-number">16.0</span>)*<span class="hljs-number">0.25</span>;
+    synth.set_fm_mod_ratio(x);
+    
+  }
+
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();  
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>
