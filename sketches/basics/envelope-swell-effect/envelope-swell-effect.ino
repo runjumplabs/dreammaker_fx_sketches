@@ -5,10 +5,12 @@
 Effect name: Attack Decay Swell 
 
 Effect description:  This is an example that shows how to use the fx_adsr_envelope
-effect to create a swell-like effects.  The ADSR envelope standads for attack-decay-
-sustain-release and controls how quickly a note fades and out.  The sketch also
-demonstrates how to route the new note pedal event to the ADSR envelope so each time 
-you play a new note, the ADSR envelope is applied.
+effect to control the attack and decay of a played note.  The ADSR envelope standads 
+for attack-decay-sustain-release and controls how quickly a note fades and out.  
+The sketch also demonstrates how to route the new note pedal event to the ADSR envelope 
+so each time you play a new note, the ADSR envelope is applied.  By turning attack and release
+way down, each note sounds like a quick pluck.  And increase attack creates a swell 
+effect like an ebow.
 
 Left pot label: Attack time
 Left pot function: Lenght of attack from 50ms to 1000ms

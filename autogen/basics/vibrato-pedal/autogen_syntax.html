@@ -17,11 +17,11 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/</span>
 <span class="hljs-comment">/*
-Effect name: Vibrato Pedal 
+Effect name: Standard Vibrato 
 
-Effect description:  This is an example that shows how to use the fx_variable_delay
-effect to create a vibrato effect.  A vibrato effect changes the pitch of the incoming
-signal based on the value of an LFO (low-frequency oscillator). 
+Effect description:  This pedal sketch implements a typical vibrato pedal.  It relies
+on the fx_variable_delay to changes the pitch of the incoming signal using an LFO 
+(low-frequency oscillator). 
 
 Left pot label: Depth 
 Left pot function: Depth of the vibrato effect
@@ -43,7 +43,7 @@ Youtube Url:
 Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.4.2
+DreamMakerFx package version: 1.5.1
 Sketch version: 1.0
 */</span>   
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
@@ -51,7 +51,7 @@ Sketch version: 1.0
 <span class="hljs-function">fx_variable_delay <span class="hljs-title">vibrato</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,          <span class="hljs-comment">// Initial rate of 1 Hz (1 cycle / second)</span>
                           <span class="hljs-number">0.5</span>,          <span class="hljs-comment">// Initial depth of 0.5</span>
                           <span class="hljs-number">0.0</span>,          <span class="hljs-comment">// No feedback needed for vibrato</span>
-                          <span class="hljs-number">100.0</span>,        <span class="hljs-comment">// Delay line length (also effects depth) in milliseconds</span>
+                          <span class="hljs-number">5.0</span>,          <span class="hljs-comment">// Delay line length (also effects depth) in milliseconds</span>
                           <span class="hljs-number">0.0</span>,          <span class="hljs-comment">// Clean mix set to 0 since we just want to hear pitch shifted</span>
                           <span class="hljs-number">1.0</span>,          <span class="hljs-comment">// Delayed mix to 1.0</span>
                           OSC_SINE,     <span class="hljs-comment">// Initial oscillator is sine wave</span>
@@ -88,12 +88,12 @@ Sketch version: 1.0
 
   <span class="hljs-comment">// Left pot controls depth of the effect</span>
   <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
-    vibrato.set_depth(pedal.pot_left.val);     
+    vibrato.set_depth(pedal.pot_left.val_log_inv);     
   } 
 
   <span class="hljs-comment">// Center pot controls rate</span>
   <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
-    <span class="hljs-keyword">float</span> rate_hz = pedal.pot_center.val* <span class="hljs-number">6.0</span>;
+    <span class="hljs-keyword">float</span> rate_hz = pedal.pot_center.val* <span class="hljs-number">8.0</span>;
     pedal.set_tap_blink_rate_hz(rate_hz);
     vibrato.set_rate_hz(rate_hz);     
   } 

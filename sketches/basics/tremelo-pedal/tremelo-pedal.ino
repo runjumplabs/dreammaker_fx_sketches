@@ -2,7 +2,7 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Tremelo example using amplitude modulator 
+Effect name: Standard Tremelo
 
 Effect description:  This is an example that shows how to use the fx_amplitude_mod
 effect to create a tremelo pedal effects.  The ADSR envelope standads for attack-decay-
@@ -29,7 +29,7 @@ Youtube Url:
 Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.4.2
+DreamMakerFx package version: 1.5.1
 Sketch version: 1.0
 */  
 #include <dreammakerfx.h>

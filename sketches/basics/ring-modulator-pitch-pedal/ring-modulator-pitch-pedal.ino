@@ -1,17 +1,34 @@
-/**
- * This is an implementation of a parametric filtering pedal.   
- * 
- * Left pot: filter center frequency
- * Center pot: filter gain (-12dB full counterclockwise to +12dB full clockwise)
- * Right pot: filter width
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: nothing
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_biquad_filter block
- * 
- */
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+
+Effect name: Typical Ring Modulator
+Effect description:  The ring modulator effect moves all of the frequencies around
+creating a very interesting and sometimes unwieldy sound.  
+
+Left pot label: Frequency 
+Left pot function: Sets the modulation frequency between 20 and 1000Hz
+
+Center pot label: Depth
+Center pot function: Sets the depth of modulation
+
+Right pot label: Not used
+Right pot function: 
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label:
+Right footswitch function: Not used
+
+Youtube Url: optional, add a URL to a youtube video
+Soundcloud Url: optional, add a URL to a soundcloud audio clip
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/
 #include <dreammakerfx.h>
 
 fx_ring_mod ring_mod(220.0,   // Freq
@@ -41,12 +58,14 @@ void loop() {
 
   // Left pot controls depth of the effect
   if (pedal.pot_left.has_changed()) { 
+    ring_mod.set_freq(20 + 980*pedal.pot_left.val);
     
   }
     
 
   // Center pot filter gain from -12dB to 12dB
   if (pedal.pot_center.has_changed()) { 
+      ring_mod.set_depth(pedal.pot_center.val);
   } 
 
   // Right pot controls filter width

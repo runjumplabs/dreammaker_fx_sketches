@@ -17,9 +17,6 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/</span>
 <span class="hljs-comment">/*
-Describe a bit about how your effect works.  Feel free to use multiple lines, 
-just don't delete or change any of the field names. 
-
 Effect name: Polyphonic guitar synth pedal
 Effect description:  This is a polyphonic guitar synth meaning that it tracks
 multiple strings.  It uses an FM synth engine along with ADSR envelope generator
@@ -72,7 +69,7 @@ Version: 1.0
   <span class="hljs-comment">// put your setup code here, to run once:</span>
    
   <span class="hljs-comment">// Initialize the pedal!</span>
-  pedal.init(<span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+  pedal.init();
 
   <span class="hljs-comment">// Route audio through effects from pedal.instr_in to pedal.amp_out</span>
   pedal.route_audio(synth.output, pedal.amp_out);  

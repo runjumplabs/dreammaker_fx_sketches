@@ -2,11 +2,11 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Vibrato Pedal 
+Effect name: Standard Vibrato 
 
-Effect description:  This is an example that shows how to use the fx_variable_delay
-effect to create a vibrato effect.  A vibrato effect changes the pitch of the incoming
-signal based on the value of an LFO (low-frequency oscillator). 
+Effect description:  This pedal sketch implements a typical vibrato pedal.  It relies
+on the fx_variable_delay to changes the pitch of the incoming signal using an LFO 
+(low-frequency oscillator). 
 
 Left pot label: Depth 
 Left pot function: Depth of the vibrato effect
@@ -28,7 +28,7 @@ Youtube Url:
 Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.4.2
+DreamMakerFx package version: 1.5.1
 Sketch version: 1.0
 */   
 #include <dreammakerfx.h>
@@ -36,7 +36,7 @@ Sketch version: 1.0
 fx_variable_delay vibrato(1.0,          // Initial rate of 1 Hz (1 cycle / second)
                           0.5,          // Initial depth of 0.5
                           0.0,          // No feedback needed for vibrato
-                          100.0,        // Delay line length (also effects depth) in milliseconds
+                          5.0,          // Delay line length (also effects depth) in milliseconds
                           0.0,          // Clean mix set to 0 since we just want to hear pitch shifted
                           1.0,          // Delayed mix to 1.0
                           OSC_SINE,     // Initial oscillator is sine wave
@@ -73,12 +73,12 @@ void loop() {
 
   // Left pot controls depth of the effect
   if (pedal.pot_left.has_changed()) { 
-    vibrato.set_depth(pedal.pot_left.val);     
+    vibrato.set_depth(pedal.pot_left.val_log_inv);     
   } 
 
   // Center pot controls rate
   if (pedal.pot_center.has_changed()) { 
-    float rate_hz = pedal.pot_center.val* 6.0;
+    float rate_hz = pedal.pot_center.val* 8.0;
     pedal.set_tap_blink_rate_hz(rate_hz);
     vibrato.set_rate_hz(rate_hz);     
   } 

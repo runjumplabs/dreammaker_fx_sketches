@@ -17,22 +17,24 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/</span>
 <span class="hljs-comment">/*
-Effect name: Swell 
+Effect name: Attack Decay Swell 
 
 Effect description:  This is an example that shows how to use the fx_adsr_envelope
-effect to create a swell-like effects.  The ADSR envelope standads for attack-decay-
-sustain-release and controls how quickly a note fades and out.  The sketch also
-demonstrates how to route the new note pedal event to the ADSR envelope so each time 
-you play a new note, the ADSR envelope is applied.
+effect to control the attack and decay of a played note.  The ADSR envelope standads 
+for attack-decay-sustain-release and controls how quickly a note fades and out.  
+The sketch also demonstrates how to route the new note pedal event to the ADSR envelope 
+so each time you play a new note, the ADSR envelope is applied.  By turning attack and release
+way down, each note sounds like a quick pluck.  And increase attack creates a swell 
+effect like an ebow.
 
-Left pot label: Nothing
-Left pot function: Nothing
+Left pot label: Attack time
+Left pot function: Lenght of attack from 50ms to 1000ms
 
-Center pot label: Nothing
-Center pot function: Nothing
+Center pot label: Gain
+Center pot function: Volume of output.  For longer swells, a bit more gain is needed.
 
-Right pot label: Nothing
-Right pot function: Nothing
+Right pot label: Release time
+Right pot function: Lenght of release from 50ms to 1000ms
 
 Left footswitch label: Bypass
 Left footswitch function: Bypasses the effect
@@ -44,7 +46,7 @@ Youtube Url:
 Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.4.2
+DreamMakerFx package version: 1.5.1
 Sketch version: 1.0
 */</span> 
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
@@ -54,13 +56,14 @@ Sketch version: 1.0
                       <span class="hljs-number">10.0</span>,   <span class="hljs-comment">// Decay is 10ms</span>
                       <span class="hljs-number">10.0</span>,   <span class="hljs-comment">// Sustain is 10ms</span>
                       <span class="hljs-number">500.0</span>,  <span class="hljs-comment">// Release is 500ms </span>
+                      <span class="hljs-number">1.0</span>,    <span class="hljs-comment">// Sustain ratio</span>
                       <span class="hljs-number">1.0</span>)</span></span>;   <span class="hljs-comment">// Full volume</span>
 
 <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
   <span class="hljs-comment">// put your setup code here, to run once:</span>
   
   <span class="hljs-comment">// Initialize the pedal!</span>
-  pedal.init();
+  pedal.init(<span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
 
   <span class="hljs-comment">// Route audio through effects from pedal.instr_in to pedal.amp_out</span>
   pedal.route_audio(pedal.instr_in, env.input);
@@ -82,16 +85,19 @@ Sketch version: 1.0
   <span class="hljs-comment">// Left pot control</span>
   <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
     <span class="hljs-comment">// Left pot value is: pedal.pot_left.val</span>
+    env.set_attack_ms(<span class="hljs-number">50</span> + pedal.pot_left.val * <span class="hljs-number">2000.0</span>);
   } 
 
-  <span class="hljs-comment">// Center pot control</span>
+  <span class="hljs-comment">// Center pot controls output volume</span>
   <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
-    <span class="hljs-comment">// Center pot value is: pedal.pot_center.val</span>
+    env.set_output_gain(<span class="hljs-number">1.0</span> + pedal.pot_center.val * <span class="hljs-number">8.0</span>);
   } 
 
   <span class="hljs-comment">// Right pot set control</span>
   <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
     <span class="hljs-comment">// Right pot value is: pedal.pot_right.val</span>
+    env.set_release_ms(<span class="hljs-number">50</span> + pedal.pot_right.val * <span class="hljs-number">1000.0</span>);
+
   }
 
   <span class="hljs-comment">// Run pedal service to take care of stuff</span>

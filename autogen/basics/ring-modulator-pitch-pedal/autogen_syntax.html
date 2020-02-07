@@ -13,20 +13,37 @@
 </head>
 <body>
 
-<pre><code class="arduino"><span class="hljs-comment">/**
- * This is an implementation of a parametric filtering pedal.   
- * 
- * Left pot: filter center frequency
- * Center pot: filter gain (-12dB full counterclockwise to +12dB full clockwise)
- * Right pot: filter width
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: nothing
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_biquad_filter block
- * 
- */</span>
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+
+Effect name: Typical Ring Modulator
+Effect description:  The ring modulator effect moves all of the frequencies around
+creating a very interesting and sometimes unwieldy sound.  
+
+Left pot label: Frequency 
+Left pot function: Sets the modulation frequency between 20 and 1000Hz
+
+Center pot label: Depth
+Center pot function: Sets the depth of modulation
+
+Right pot label: Not used
+Right pot function: 
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label:
+Right footswitch function: Not used
+
+Youtube Url: optional, add a URL to a youtube video
+Soundcloud Url: optional, add a URL to a soundcloud audio clip
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/</span>
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
 
 <span class="hljs-function">fx_ring_mod <span class="hljs-title">ring_mod</span><span class="hljs-params">(<span class="hljs-number">220.0</span>,   <span class="hljs-comment">// Freq</span>
@@ -56,12 +73,14 @@
 
   <span class="hljs-comment">// Left pot controls depth of the effect</span>
   <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    ring_mod.set_freq(<span class="hljs-number">20</span> + <span class="hljs-number">980</span>*pedal.pot_left.val);
     
   }
     
 
   <span class="hljs-comment">// Center pot filter gain from -12dB to 12dB</span>
   <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+      ring_mod.set_depth(pedal.pot_center.val);
   } 
 
   <span class="hljs-comment">// Right pot controls filter width</span>
