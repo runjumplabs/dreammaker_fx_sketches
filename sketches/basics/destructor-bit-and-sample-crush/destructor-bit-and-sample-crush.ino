@@ -2,7 +2,7 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Bit and sample rate crusher
+Effect name: Bit and Sample Rate Crusher
 
 Effect description: 
 Uses the BIT_CRUSHER and the SAMPLE_RATE_CRUSHER models in the destructor to both 

@@ -2,7 +2,7 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Smooth distortion example
+Effect name: Warm Distortion 
 
 Effect description:  This is an example that shows how to use the fx_destructor
 effect to create a smooth, tube-like distortion sound. To make this more interesting,

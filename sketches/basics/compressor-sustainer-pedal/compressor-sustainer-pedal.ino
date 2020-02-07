@@ -2,7 +2,7 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Compressor / sustainer pedal
+Effect name: Compressor / Sustainer
 
 Effect description:  This is an example that shows how to use the fx_compressor 
 effect to create a compressor sustainer pedal

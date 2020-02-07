@@ -2,8 +2,8 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Chorus Pedal
-Effect description:  This pedal is a chorus pedal that has multiple types of modulators
+Effect name: Standard Chorus 
+Effect description:  This is a standard chorus pedal that has multiple types of modulators
 controlling the chorus effect that can be selected with the right pot.
 
 Left pot label: Depth
