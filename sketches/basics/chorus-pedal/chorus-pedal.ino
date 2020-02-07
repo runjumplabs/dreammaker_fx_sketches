@@ -2,7 +2,7 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Effect name: Basic Chorus Pedal
+Effect name: Chorus Pedal
 Effect description:  This pedal is a chorus pedal that has multiple types of modulators
 controlling the chorus effect that can be selected with the right pot.
 
@@ -21,11 +21,11 @@ Left footswitch function: Bypasses the effect
 Right footswitch label: Tap rate set
 Right footswitch function: Tap this switch to set the rate of the effect
 
-Youtube Url: 
-Soundcloud Url: 
+Youtube Url:
+Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package: 1.5.1
+DreamMakerFx package version: 1.5.1
 Version: 1.0
 */
 #include <dreammakerfx.h>

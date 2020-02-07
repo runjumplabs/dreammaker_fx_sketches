@@ -27,7 +27,7 @@ Youtube Url: optional, add a URL to a youtube video
 Soundcloud Url: optional, add a URL to a soundcloud audio clip
 
 Created by: your alias
-DreamMakerFx package: DreamMakerFx package version used x.y.z (e.g. 1.4.2)
+DreamMakerFx package version: DreamMakerFx package version used x.y.z (e.g. 1.4.2)
 Version: version of your sketch (e.g. 1.0)
 */
 #include <dreammakerfx.h>

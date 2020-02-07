@@ -25,7 +25,7 @@ Youtube Url:
 Soundcloud Url: 
 
 Created by: DreamMaker
-DreamMakerFx package: 1.4.2
+DreamMakerFx package version: 1.5.1
 Version: 1.0
 */ 
 #include <dreammakerfx.h>
@@ -47,7 +47,7 @@ void setup() {
   // put your setup code here, to run once:
 
   // Initialize the pedal!
-  pedal.init(true, true, true);
+  pedal.init();
    
   pedal.route_audio(pedal.instr_in, tube_clip.input);
   pedal.route_audio(tube_clip.output, slice4.input);
@@ -86,7 +86,7 @@ void loop() {
   
   // Center pot changes pitch shift amount
   if (pedal.pot_center.has_changed()) {
-    tube_clip.set_param_2(2.0 + pedal.pot_center.val * 32);
+    tube_clip.set_drive(2.0 + pedal.pot_center.val * 32);
   }  
   
   // Right pot changes mix gain

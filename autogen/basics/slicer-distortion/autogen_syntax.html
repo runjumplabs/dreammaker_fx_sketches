@@ -40,7 +40,7 @@ Youtube Url:
 Soundcloud Url: 
 
 Created by: DreamMaker
-DreamMakerFx package: 1.4.2
+DreamMakerFx package version: 1.5.1
 Version: 1.0
 */</span> 
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
@@ -62,7 +62,7 @@ fx_mixer_4      mix4;
   <span class="hljs-comment">// put your setup code here, to run once:</span>
 
   <span class="hljs-comment">// Initialize the pedal!</span>
-  pedal.init(<span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>, <span class="hljs-literal">true</span>);
+  pedal.init();
    
   pedal.route_audio(pedal.instr_in, tube_clip.input);
   pedal.route_audio(tube_clip.output, slice4.input);
@@ -101,7 +101,7 @@ fx_mixer_4      mix4;
   
   <span class="hljs-comment">// Center pot changes pitch shift amount</span>
   <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
-    tube_clip.set_param_2(<span class="hljs-number">2.0</span> + pedal.pot_center.val * <span class="hljs-number">32</span>);
+    tube_clip.set_drive(<span class="hljs-number">2.0</span> + pedal.pot_center.val * <span class="hljs-number">32</span>);
   }  
   
   <span class="hljs-comment">// Right pot changes mix gain</span>

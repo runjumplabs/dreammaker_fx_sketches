@@ -34,7 +34,7 @@ Youtube Url:
 Soundcloud Url: https://soundcloud.com/dreammakerfx/polyphonic-synth-guitar-effect-on-dreammaker-fx
 
 Created by: DreamMaker
-DreamMakerFx package: 1.5.1
+DreamMakerFx package version: 1.5.1
 Version: 1.0
 */
 #include <dreammakerfx.h>

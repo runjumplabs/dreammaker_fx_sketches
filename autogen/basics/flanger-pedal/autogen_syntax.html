@@ -13,29 +13,16 @@
 </head>
 <body>
 
-<pre><code class="arduino"><span class="hljs-comment">/**
- * This is an implementation of a typical flanger pedal.  
- * 
- * Left pot: depth - the depth of the flanger effect
- * Center pot: delay time - modulation rate
- * Right pot: feedback - the feedback has a big impact on the sound.  Full counter-clockwise is -1.0
- *                       center is 0.0, and full clock-wise is 1.0.
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: tap - tap it a few times at a set interval to update the flanger modulation rate
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_variable_delay block
- * 
- */</span>
-
-<span class="hljs-comment">/******************************************************************************
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/</span>
 <span class="hljs-comment">/*
 
-Effect name: Basic Flanger
-Effect description:  This is an implementation of a typical flanger pedal
+Effect name: Flanger Pedal
+Effect description:  This is an implementation of a typical flanger pedal. This sketch uses
+the variable delay block to create a time / pitch shifted version of the original signal.  When
+this is mixed with the original signal, it creates the "flange" effect.  The effect becomes 
+pronouced with feedback.  
 
 Left pot label: Depth
 Left pot function: The depth of the flanger effect
@@ -57,7 +44,7 @@ Youtube Url:
 Soundcloud Url: 
 
 Created by: DreamMaker
-DreamMakerFx package: 1.4.2
+DreamMakerFx package version: 1.5.1
 Version: 1.0
 */</span> 
 <span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>

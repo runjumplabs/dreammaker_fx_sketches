@@ -80,6 +80,8 @@ for root, subdirs, files in os.walk(rootdir):
                     a = re.findall(regex, source, flags=re.DOTALL)
                     if (len(a) > 0):
                         result[title] = a[0].replace("\n"," ").replace("\r"," ").strip()
+                    else:
+                        result[title] = ""
 
                     result.update(this_data)
 
@@ -122,10 +124,16 @@ with open('../autogen/all_data_autogen.json', 'w') as outfile:
     json.dump(alldata, outfile)
 
 
+os.system("git pull")
 os.system("git add ../")
 os.system("git commit -a -m \"Auto-gen update\"")
 os.system("git push")
             
+os.chdir('../../dreammaker_fx_web')
+os.system("git pull")
+os.system("git add .")
+os.system("git commit -a -m \"Auto-gen update\"")
+os.system("git push")       
 
 
 
