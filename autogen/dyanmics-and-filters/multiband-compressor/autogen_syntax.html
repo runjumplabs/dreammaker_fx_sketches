@@ -13,7 +13,40 @@
 </head>
 <body>
 
-<pre><code class="arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"dm_fx.h"</span></span>
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+
+Effect name: Multi-band compressor
+Effect description:  Two-band compressor which uses a low-pass and high-pass
+filter to separate the audio into two components, and then applies
+independent compressors to each
+
+Left pot label: Crossover freq
+Left pot function: Crossover frequency between the two filters
+
+Center pot label: Threshold
+Center pot function: Compression threshold
+
+Right pot label: Gain
+Right pot function: Compressor output gain
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label:
+Right footswitch function: describe right footswitch function
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
 
 <span class="hljs-comment">/**
  Multiband compressor example uses two compressors which each act on a certain
@@ -48,16 +81,17 @@ Created with http://asciiflow.com/
                           <span class="hljs-number">100.0</span>,    <span class="hljs-comment">// Release (100ms)</span>
                           <span class="hljs-number">2.0</span>)</span></span>;     <span class="hljs-comment">// Output gain (2x);</span>
 
-<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">crossover_filt_lower</span><span class="hljs-params">(<span class="hljs-number">400.0</span>,             <span class="hljs-comment">// 400.0 Hz</span>
-                                       FILTER_WIDTH_WIDE, 
-                                       BIQUAD_TYPE_LPF)</span></span>;  <span class="hljs-comment">// Lowpass</span>
-<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">crossover_filt_upper</span><span class="hljs-params">(<span class="hljs-number">400.0</span>,             <span class="hljs-comment">// 400.0 Hz</span>
-                                       FILTER_WIDTH_WIDE, 
-                                       BIQUAD_TYPE_HPF)</span></span>;  <span class="hljs-comment">// Highpass</span>
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">crossover_filt_lower</span><span class="hljs-params">(<span class="hljs-number">400.0</span>,             <span class="hljs-comment">// Initial frequency of  400.0 Hz</span>
+                                       <span class="hljs-number">1.0</span>, 
+                                       BIQUAD_TYPE_LPF,
+                                       BIQUAD_ORDER_6)</span></span>;  
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">crossover_filt_upper</span><span class="hljs-params">(<span class="hljs-number">400.0</span>,             <span class="hljs-comment">// Initial frequency of 400.0 Hz</span>
+                                       <span class="hljs-number">1.0</span>,
+                                       BIQUAD_TYPE_HPF,   <span class="hljs-comment">// Highpass</span>
+                                       BIQUAD_ORDER_6)</span></span>;  
 
 fx_mixer_2 mixer;
 
-<span class="hljs-keyword">bool</span>  effect_bypassed = <span class="hljs-literal">false</span>;
 
 <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
   <span class="hljs-comment">// put your setup code here, to run once:</span>
@@ -75,10 +109,11 @@ fx_mixer_2 mixer;
 
   pedal.route_audio(mixer.output, pedal.amp_out);
 
+  <span class="hljs-comment">// Left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
   pedal.run();
 
-  <span class="hljs-comment">// pedal on initially</span>
-  digitalWrite(PIN_FOOTSW_LED_1, HIGH); <span class="hljs-comment">// Turn on LED</span>
     
 }
 
@@ -86,65 +121,32 @@ fx_mixer_2 mixer;
   <span class="hljs-comment">// put your main code here, to run repeatedly:</span>
 
   <span class="hljs-comment">// Add an event if pot 0 has changed</span>
-  <span class="hljs-keyword">if</span> (pedal.pot_0.has_changed()) { 
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
 
     <span class="hljs-comment">// Pot 0 changes the cross over frequency of the filters</span>
-    crossover_filt_lower.set_freq(<span class="hljs-number">100.0</span> + <span class="hljs-number">1000.0</span>*pedal.pot_0.val);
-    crossover_filt_upper.set_freq(<span class="hljs-number">100.0</span> + <span class="hljs-number">1000.0</span>*pedal.pot_0.val);
-    Serial.print(<span class="hljs-string">"Crossover changed to: "</span>);
-    Serial.print(<span class="hljs-number">100.0</span> + <span class="hljs-number">1000.0</span>*pedal.pot_0.val);
-    Serial.println(<span class="hljs-string">"Hz"</span>);
-    
+    crossover_filt_lower.set_freq(<span class="hljs-number">200.0</span> + <span class="hljs-number">1000.0</span>*pedal.pot_left.val_log_inv);
+    crossover_filt_upper.set_freq(<span class="hljs-number">200.0</span> + <span class="hljs-number">1000.0</span>*pedal.pot_left.val_log_inv);    
   } 
 
   <span class="hljs-comment">// Add an event if pot 1 has changed</span>
-  <span class="hljs-keyword">if</span> (pedal.pot_1.has_changed()) { 
-    comp_upper.set_attack(pedal.pot_1.val*<span class="hljs-number">100.0</span> + <span class="hljs-number">10.0</span>);
-    comp_lower.set_attack(pedal.pot_1.val*<span class="hljs-number">100.0</span> + <span class="hljs-number">10.0</span>);
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) { 
+    comp_upper.set_threshold(<span class="hljs-number">-12.0</span> - (pedal.pot_center.val*<span class="hljs-number">40</span>));
+    comp_lower.set_threshold(<span class="hljs-number">-12.0</span> - (pedal.pot_center.val*<span class="hljs-number">40</span>));
 
-    Serial.print(<span class="hljs-string">"Attack changed to: "</span>);
-    Serial.print(pedal.pot_1.val*<span class="hljs-number">100.0</span> + <span class="hljs-number">10.0</span>);
-    Serial.println(<span class="hljs-string">"ms"</span>);
   } 
 
   <span class="hljs-comment">// Add an event if pot 2 has changed (DOESN'T WORK ON FIRST GEN HARDWARE YET)</span>
-  <span class="hljs-keyword">if</span> (pedal.pot_2.has_changed()) { 
-    comp_upper.set_threshold(<span class="hljs-number">-12.0</span> - (pedal.pot_2.val*<span class="hljs-number">60</span>));
-    comp_lower.set_threshold(<span class="hljs-number">-12.0</span> - (pedal.pot_2.val*<span class="hljs-number">60</span>));
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) { 
 
-    comp_upper.set_output_gain(<span class="hljs-number">2</span> + pedal.pot_2.val*<span class="hljs-number">15</span>);
-    comp_lower.set_output_gain(<span class="hljs-number">2</span> + pedal.pot_2.val*<span class="hljs-number">15</span>);
-
-    Serial.print(<span class="hljs-string">"Sustain changed to: "</span>);
-    Serial.println(pedal.pot_2.val);
+    comp_upper.set_output_gain(<span class="hljs-number">2</span> + pedal.pot_right.val_log_inv*<span class="hljs-number">15</span>);
+    comp_lower.set_output_gain(<span class="hljs-number">2</span> + pedal.pot_right.val_log_inv*<span class="hljs-number">15</span>);
 
   } 
 
   <span class="hljs-comment">// Service </span>
   pedal.service();
 
-  <span class="hljs-comment">// Check if bypass status has changed and update LEDs</span>
-  <span class="hljs-keyword">if</span> (effect_bypassed) {
-    digitalWrite(PIN_FOOTSW_LED_1, LOW);  <span class="hljs-comment">// Turn off LED</span>
-  } <span class="hljs-keyword">else</span> {
-    digitalWrite(PIN_FOOTSW_LED_1, HIGH);  <span class="hljs-comment">// Turn off LED</span>
-  }
-  
 
-}
-
-<span class="hljs-comment">// Footswitch 1 - typically used for enable/bypass</span>
-<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">footswitch_1_pressed</span><span class="hljs-params">()</span> </span>{ 
-  
-  <span class="hljs-comment">// Bypass code</span>
-  <span class="hljs-keyword">if</span> (effect_bypassed) {
-    <span class="hljs-comment">// If we are currently bypassed, switch pedal to active mode and turn on LED next to SW1</span>
-    pedal.enable_fx();
-  } <span class="hljs-keyword">else</span> {
-    <span class="hljs-comment">// If we are currently active, switch pedal to bypassed mode and turn off LED next to SW1</span>
-    pedal.bypass_fx();
-  }
-  effect_bypassed = !effect_bypassed; <span class="hljs-comment">// Toggle bypassed state variable</span>
 }
 </code></pre>
 

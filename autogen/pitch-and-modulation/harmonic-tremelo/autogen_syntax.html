@@ -13,13 +13,41 @@
 </head>
 <body>
 
-<pre><code class="arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"dreammakerfx.h"</span></span>
-
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
 <span class="hljs-comment">/*
-A harmonic tremelo is basically a pair of tremelos that are 180 degrees out of 
+Effect name: Harmonic Tremelo 
+Effect description: A harmonic tremelo is basically a pair of tremelos that are 180 degrees out of 
 phase.  The first tremelo is run through a low pass filter and the second
 tremelo is run through a high pass filter.  The result is a tremelo type 
 sounds but the volume remains rather constant.
+
+Left pot label: Rate
+Left pot function: Tremelo LFO rate
+
+Center pot label: Crossover
+Center pot function: Crossover frequency between low and high end
+
+Right pot label: Depth
+Right pot function: Depth of tremelo
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap tempo
+Right footswitch function: Tap it a few times to set the vibrato tempo
+
+Youtube Url: https://youtu.be/DukYIt-AhOo
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1.
+Version: 1.0
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"dreammakerfx.h"</span></span>
+
+<span class="hljs-comment">/*
 
              +-------+    +----------------------+    +-------+
              |       |    |                      |    |       |
@@ -105,23 +133,23 @@ fx_mixer_2    mix2;
 
 
   <span class="hljs-comment">// Pot 0 / right pot changes the rate of the tremelo from 0 to 4Hz</span>
-  <span class="hljs-keyword">if</span> (pedal.pot_0.has_changed()) {
-    <span class="hljs-keyword">float</span> new_rate_hz = pedal.pot_0.val*<span class="hljs-number">4.0</span>;
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    <span class="hljs-keyword">float</span> new_rate_hz = pedal.pot_left.val*<span class="hljs-number">4.0</span>;
     mod1.set_rate_hz(new_rate_hz);
     mod2.set_rate_hz(new_rate_hz);
     pedal.set_tap_blink_rate_hz(new_rate_hz);
   }
 
   <span class="hljs-comment">// Pot 1 / middle pot changes cross over frequency between 300 and 1700Hz</span>
-  <span class="hljs-keyword">if</span> (pedal.pot_1.has_changed()) {
-    lpf.set_freq(<span class="hljs-number">300.0</span> + pedal.pot_1.val*<span class="hljs-number">700.0</span>);
-    hpf.set_freq(<span class="hljs-number">300.0</span> + pedal.pot_1.val*<span class="hljs-number">700.0</span>);
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    lpf.set_freq(<span class="hljs-number">300.0</span> + pedal.pot_center.val*<span class="hljs-number">700.0</span>);
+    hpf.set_freq(<span class="hljs-number">300.0</span> + pedal.pot_center.val*<span class="hljs-number">700.0</span>);
   }
 
   <span class="hljs-comment">// Pot 2 / left sets the depth of the modulation</span>
-  <span class="hljs-keyword">if</span> (pedal.pot_2.has_changed()) {
-    mod1.set_depth(pedal.pot_2.val);
-    mod2.set_depth(pedal.pot_2.val);
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    mod1.set_depth(pedal.pot_right.val);
+    mod2.set_depth(pedal.pot_right.val);
     
   }
 }

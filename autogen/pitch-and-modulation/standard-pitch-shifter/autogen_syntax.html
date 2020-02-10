@@ -13,24 +13,39 @@
 </head>
 <body>
 
-<pre><code class="arduino">/**
- * This is an implementation of a pitch shift pedal.   
- * 
- * Left pot: Dry / clean signal mix
- * Center pot: Pitch shift setting (oct down, fifth down, third down, third up, fifth up, octave up)
- * Right pot: wet / octave signal mix
- * 
- * Left footswitch: bypass - turns on and off the effect
- * Right footswitch: nothing
- * 
- * This effect uses a tiny amount of the available processing power and memory.
- * It's provided as an example of how to use the various features of the fx_pitch_shift block
- * 
- * 
- */
+<pre><code class="arduino">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: standard pitch shifter
+Effect description:  Standard pitch shifter pedal than can pitch shift incoming
+audio by an arbitrary amount.
+
+Left pot label: Dry mix
+Left pot function: Gain of dry / unprocessed signal
+
+Center pot label: Shift amount
+Center pot function: Various presets for shift amounts
+
+Right pot label: Pitch shift mix
+Right pot function: Gain of pitch shifted signal
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label:
+Right footswitch function: Not used
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/
 #include &lt;dreammakerfx.h&gt;
 
-fx_pitch_shift    pitch_shift(1.0);     // 0.6 feedback ratio
+fx_pitch_shift    pitch_shift(1.0);     
 
 fx_mixer_2    mix2;
 fx_gain       clean_mix(1.0), pitch_shift_mix(1.0);

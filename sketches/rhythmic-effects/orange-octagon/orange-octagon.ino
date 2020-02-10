@@ -1,3 +1,36 @@
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Describe a bit about how your effect works.  Feel free to use multiple lines, 
+just don't delete or change any of the field names. 
+
+Effect name: Orange octagon
+Effect description:  Uses the slicer to create a rhythmic pattern of filter 
+effects
+
+Left pot label:  Base Freq
+Left pot function: Adjusts the base frequencies of the filters
+
+Center pot label: Output gain
+Center pot function: Adjusts the output gain
+
+Right pot label: Spread Freq
+Right pot function: Adjusts the spread frequencies of the filters
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap speed
+Right footswitch function: Tap a few times to set the speed of the slicer
+
+Youtube Url:
+Soundcloud Url: 
+
+Created by: your alias
+DreamMakerFx package version: DreamMakerFx package version used x.y.z (e.g. 1.4.2)
+Version: version of your sketch (e.g. 1.0)
+*/
 #include <dreammakerfx.h>
 
 fx_slicer   slice4(1000.0, 4);
@@ -41,6 +74,9 @@ void setup() {
 
   pedal.route_audio(mix4.output, out_gain.input);
   pedal.route_audio(out_gain.output, pedal.amp_out);
+
+  // Reset the slicer position when a new note is played
+  pedal.route_control(pedal.new_note, slice4.start);
 
   pedal.add_bypass_button(FOOTSWITCH_LEFT);
 

@@ -1,4 +1,37 @@
-#include "dm_fx.h"
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+
+Effect name: Multi-band compressor
+Effect description:  Two-band compressor which uses a low-pass and high-pass
+filter to separate the audio into two components, and then applies
+independent compressors to each
+
+Left pot label: Crossover freq
+Left pot function: Crossover frequency between the two filters
+
+Center pot label: Threshold
+Center pot function: Compression threshold
+
+Right pot label: Gain
+Right pot function: Compressor output gain
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label:
+Right footswitch function: describe right footswitch function
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/
+#include <dreammakerfx.h>
+
 
 /**
  Multiband compressor example uses two compressors which each act on a certain
@@ -33,16 +66,17 @@ fx_compressor comp_lower( -40.0,    // Threshold in dB
                           100.0,    // Release (100ms)
                           2.0);     // Output gain (2x);
 
-fx_biquad_filter  crossover_filt_lower(400.0,             // 400.0 Hz
-                                       FILTER_WIDTH_WIDE, 
-                                       BIQUAD_TYPE_LPF);  // Lowpass
-fx_biquad_filter  crossover_filt_upper(400.0,             // 400.0 Hz
-                                       FILTER_WIDTH_WIDE, 
-                                       BIQUAD_TYPE_HPF);  // Highpass
+fx_biquad_filter  crossover_filt_lower(400.0,             // Initial frequency of  400.0 Hz
+                                       1.0, 
+                                       BIQUAD_TYPE_LPF,
+                                       BIQUAD_ORDER_6);  
+fx_biquad_filter  crossover_filt_upper(400.0,             // Initial frequency of 400.0 Hz
+                                       1.0,
+                                       BIQUAD_TYPE_HPF,   // Highpass
+                                       BIQUAD_ORDER_6);  
 
 fx_mixer_2 mixer;
 
-bool  effect_bypassed = false;
 
 void setup() {
   // put your setup code here, to run once:
@@ -60,10 +94,11 @@ void setup() {
 
   pedal.route_audio(mixer.output, pedal.amp_out);
 
+  // Left footswitch is bypass
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
   pedal.run();
 
-  // pedal on initially
-  digitalWrite(PIN_FOOTSW_LED_1, HIGH); // Turn on LED
     
 }
 
@@ -71,63 +106,30 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   // Add an event if pot 0 has changed
-  if (pedal.pot_0.has_changed()) { 
+  if (pedal.pot_left.has_changed()) { 
 
     // Pot 0 changes the cross over frequency of the filters
-    crossover_filt_lower.set_freq(100.0 + 1000.0*pedal.pot_0.val);
-    crossover_filt_upper.set_freq(100.0 + 1000.0*pedal.pot_0.val);
-    Serial.print("Crossover changed to: ");
-    Serial.print(100.0 + 1000.0*pedal.pot_0.val);
-    Serial.println("Hz");
-    
+    crossover_filt_lower.set_freq(200.0 + 1000.0*pedal.pot_left.val_log_inv);
+    crossover_filt_upper.set_freq(200.0 + 1000.0*pedal.pot_left.val_log_inv);    
   } 
 
   // Add an event if pot 1 has changed
-  if (pedal.pot_1.has_changed()) { 
-    comp_upper.set_attack(pedal.pot_1.val*100.0 + 10.0);
-    comp_lower.set_attack(pedal.pot_1.val*100.0 + 10.0);
+  if (pedal.pot_center.has_changed()) { 
+    comp_upper.set_threshold(-12.0 - (pedal.pot_center.val*40));
+    comp_lower.set_threshold(-12.0 - (pedal.pot_center.val*40));
 
-    Serial.print("Attack changed to: ");
-    Serial.print(pedal.pot_1.val*100.0 + 10.0);
-    Serial.println("ms");
   } 
 
   // Add an event if pot 2 has changed (DOESN'T WORK ON FIRST GEN HARDWARE YET)
-  if (pedal.pot_2.has_changed()) { 
-    comp_upper.set_threshold(-12.0 - (pedal.pot_2.val*60));
-    comp_lower.set_threshold(-12.0 - (pedal.pot_2.val*60));
+  if (pedal.pot_right.has_changed()) { 
 
-    comp_upper.set_output_gain(2 + pedal.pot_2.val*15);
-    comp_lower.set_output_gain(2 + pedal.pot_2.val*15);
-
-    Serial.print("Sustain changed to: ");
-    Serial.println(pedal.pot_2.val);
+    comp_upper.set_output_gain(2 + pedal.pot_right.val_log_inv*15);
+    comp_lower.set_output_gain(2 + pedal.pot_right.val_log_inv*15);
 
   } 
 
   // Service 
   pedal.service();
 
-  // Check if bypass status has changed and update LEDs
-  if (effect_bypassed) {
-    digitalWrite(PIN_FOOTSW_LED_1, LOW);  // Turn off LED
-  } else {
-    digitalWrite(PIN_FOOTSW_LED_1, HIGH);  // Turn off LED
-  }
-  
 
-}
-
-// Footswitch 1 - typically used for enable/bypass
-void footswitch_1_pressed() { 
-  
-  // Bypass code
-  if (effect_bypassed) {
-    // If we are currently bypassed, switch pedal to active mode and turn on LED next to SW1
-    pedal.enable_fx();
-  } else {
-    // If we are currently active, switch pedal to bypassed mode and turn off LED next to SW1
-    pedal.bypass_fx();
-  }
-  effect_bypassed = !effect_bypassed; // Toggle bypassed state variable
 }

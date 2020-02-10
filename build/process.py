@@ -99,6 +99,9 @@ for root, subdirs, files in os.walk(rootdir):
             if not success:
                 this_data['compiles'] = False
 
+            if len(result['name']) == 0:
+                this_data['compiles'] = False                
+
             # Create HTML file
             if (os.path.isfile(root_output+"/autogen_syntax.html")):
                 os.remove(root_output+"/autogen_syntax.html")

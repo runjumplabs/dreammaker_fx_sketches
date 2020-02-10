@@ -1,13 +1,40 @@
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Pentatonic Theramin 
+Effect description:  Creates a Theramin using a Sparkfun distance sensor.
+When the measured distance from the sensor is less than about 2.5 feet, the tones 
+are mixed in.  And when there is nothing in front of the sensor, the tones turn off.
+This sketch relies on a Sparkfun distance sensor that can be obtained 
+here: https://www.sparkfun.com/products/14722
+
+Left pot label: Phase shift depth
+Left pot function: Depth of the phase shifter
+
+Center pot label: Tone
+Center pot function: Sets frequency of output filter
+
+Right pot label: Delay time
+Right pot function: Length of echoes
+
+Left footswitch label: 
+Left footswitch function: Not used
+
+Right footswitch label:
+Right footswitch function: Not used
+
+Youtube Url: https://www.youtube.com/watch?v=Pbnx5vn5iOc
+Soundcloud Url: optional, add a URL to a soundcloud audio clip
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/
 #include <dreammakerfx.h>
-/**
- * This sketch relies on a Sparkfun distance sensor that can be obtained here: https://www.sparkfun.com/products/14722
- * 
- * When the measured distance from the sensor is less than about 2.5 feet, the tones are mixed in.  And when 
- * there is nothing in front of the sensor, the tones turn off.
- */
 
 
-// These are the include files that comes wiht the 
+// These are the include files that comes wiht the distance sensor
 #include <ComponentObject.h>
 #include <RangeSensor.h>
 #include <SparkFun_VL53L1X.h>
@@ -16,7 +43,7 @@
 
 // Two oscillators 
 fx_oscillator     therm1(OSC_TRI, 200.0, 0.5);
-fx_oscillator     therm2(OSC_RAMP, 200.0, 0.5);
+fx_oscillator     therm2(OSC_RAMP_POS, 200.0, 0.5);
 
 // Delays / echoes for each sensor
 fx_delay         therm1_delay(1000.0, 0.6);

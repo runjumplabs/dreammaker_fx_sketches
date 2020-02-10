@@ -1,10 +1,38 @@
-#include "dreammakerfx.h"
-
+/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
 /*
-A harmonic tremelo is basically a pair of tremelos that are 180 degrees out of 
+Effect name: Harmonic Tremelo 
+Effect description: A harmonic tremelo is basically a pair of tremelos that are 180 degrees out of 
 phase.  The first tremelo is run through a low pass filter and the second
 tremelo is run through a high pass filter.  The result is a tremelo type 
 sounds but the volume remains rather constant.
+
+Left pot label: Rate
+Left pot function: Tremelo LFO rate
+
+Center pot label: Crossover
+Center pot function: Crossover frequency between low and high end
+
+Right pot label: Depth
+Right pot function: Depth of tremelo
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap tempo
+Right footswitch function: Tap it a few times to set the vibrato tempo
+
+Youtube Url: https://youtu.be/DukYIt-AhOo
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1.
+Version: 1.0
+*/
+#include "dreammakerfx.h"
+
+/*
 
              +-------+    +----------------------+    +-------+
              |       |    |                      |    |       |
@@ -90,23 +118,23 @@ void loop() {
 
 
   // Pot 0 / right pot changes the rate of the tremelo from 0 to 4Hz
-  if (pedal.pot_0.has_changed()) {
-    float new_rate_hz = pedal.pot_0.val*4.0;
+  if (pedal.pot_left.has_changed()) {
+    float new_rate_hz = pedal.pot_left.val*4.0;
     mod1.set_rate_hz(new_rate_hz);
     mod2.set_rate_hz(new_rate_hz);
     pedal.set_tap_blink_rate_hz(new_rate_hz);
   }
 
   // Pot 1 / middle pot changes cross over frequency between 300 and 1700Hz
-  if (pedal.pot_1.has_changed()) {
-    lpf.set_freq(300.0 + pedal.pot_1.val*700.0);
-    hpf.set_freq(300.0 + pedal.pot_1.val*700.0);
+  if (pedal.pot_center.has_changed()) {
+    lpf.set_freq(300.0 + pedal.pot_center.val*700.0);
+    hpf.set_freq(300.0 + pedal.pot_center.val*700.0);
   }
 
   // Pot 2 / left sets the depth of the modulation
-  if (pedal.pot_2.has_changed()) {
-    mod1.set_depth(pedal.pot_2.val);
-    mod2.set_depth(pedal.pot_2.val);
+  if (pedal.pot_right.has_changed()) {
+    mod1.set_depth(pedal.pot_right.val);
+    mod2.set_depth(pedal.pot_right.val);
     
   }
 }
