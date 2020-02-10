@@ -101,7 +101,7 @@ fx_mixer_4      mix4;
   
   <span class="hljs-comment">// Center pot changes pitch shift amount</span>
   <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
-    tube_clip.set_drive(<span class="hljs-number">2.0</span> + pedal.pot_center.val * <span class="hljs-number">32</span>);
+    tube_clip.set_input_drive(<span class="hljs-number">2.0</span> + pedal.pot_center.val * <span class="hljs-number">32</span>);
   }  
   
   <span class="hljs-comment">// Right pot changes mix gain</span>

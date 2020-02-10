@@ -86,7 +86,7 @@ void loop() {
   
   // Center pot changes pitch shift amount
   if (pedal.pot_center.has_changed()) {
-    tube_clip.set_drive(2.0 + pedal.pot_center.val * 32);
+    tube_clip.set_input_drive(2.0 + pedal.pot_center.val * 32);
   }  
   
   // Right pot changes mix gain

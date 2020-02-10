@@ -61,7 +61,7 @@ for root, subdirs, files in os.walk(rootdir):
                 print(result['category'])
 
                 # Determine what mods this effect uses
-                fx_mods = ["fx_adsr_envelope","fx_biquad_filter","fx_compressor","fx_delay","fx_destructor","fx_envelope_tracker","fx_gain","fx_looper","fx_mixer_2","fx_mixer_3","fx_mixer_4","fx_octave","fx_oscillator","fx_phase_shifter","fx_pitch_shift","fx_ring_mod","fx_slicer","fx_variable_delay"]
+                fx_mods = ["fx_adsr_envelope","fx_amplitude_mod","fx_biquad_filter","fx_compressor","fx_delay","fx_destructor","fx_envelope_tracker","fx_gain","fx_looper","fx_mixer_2","fx_mixer_3","fx_mixer_4","fx_instrument_synth","fx_oscillator","fx_phase_shifter","fx_pitch_shift","fx_ring_mod","fx_slicer","fx_variable_delay"]
                 result['modules'] = []
                 for fx_mod in fx_mods:
                     a = re.findall(fx_mod, source)
