@@ -3,7 +3,7 @@
  *****************************************************************************/
 /*
 
-Effect name: Flanger Pedal
+Effect name: Standard Flanger 
 Effect description:  This is an implementation of a typical flanger pedal. This sketch uses
 the variable delay block to create a time / pitch shifted version of the original signal.  When
 this is mixed with the original signal, it creates the "flange" effect.  The effect becomes 
@@ -25,12 +25,12 @@ Left footswitch function: Bypasses the effect
 Right footswitch label: Tap rate
 Right footswitch function: Tap this switch to set the rate of the flanger
 
-Youtube Url: 
-Soundcloud Url: 
+Youtube Url:
+Soundcloud Url:
 
 Created by: DreamMaker
 DreamMakerFx package version: 1.5.1
-Version: 1.0
+Sketch version: 1.0
 */ 
 #include <dreammakerfx.h>
 

@@ -20,6 +20,7 @@ os.mkdir(html_web_dir)
 for root, subdirs, files in os.walk(rootdir):
     for filename in files:
         if filename[-4:] == ".ino" and filename != "dreammaker_fx_template.ino":
+            print(filename)
 
             root_output = root.replace("/sketches/","/autogen/")
             if (not os.path.isdir(root_output)):
@@ -78,12 +79,16 @@ for root, subdirs, files in os.walk(rootdir):
                     if (len(a) > 0):
                         result[title] = a[0].replace("\n"," ").replace("\r"," ").strip()
                     else:
+                        print("MISSING: "+title)
+                        pprint(a)
+                        pprint(regex)
+                        exit()
                         result[title] = ""
 
-                    result.update(this_data)
+                result.update(this_data)
 
-                    with open(os.path.join(root_output,'autogen.json'), 'w') as outfile:
-                        json.dump(result, outfile)
+                with open(os.path.join(root_output,'autogen.json'), 'w') as outfile:
+                    json.dump(result, outfile)
 
 
 

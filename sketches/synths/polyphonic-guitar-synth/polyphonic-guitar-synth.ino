@@ -32,7 +32,7 @@ Soundcloud Url: https://soundcloud.com/dreammakerfx/polyphonic-synth-guitar-effe
 
 Created by: DreamMaker
 DreamMakerFx package version: 1.5.1
-Version: 1.0
+Sketch version: 1.0
 */
 #include <dreammakerfx.h>
 
