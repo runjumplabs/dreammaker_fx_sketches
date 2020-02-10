@@ -14,6 +14,8 @@ rootdir = '../sketches/'
 html_web_dir = "../../dreammaker_fx_web/sketches/"
 html_html_root = "https://runjumplabs.github.io/dreammaker_fx/sketches"
 
+os.system("git pull")
+
 shutil.rmtree(html_web_dir[:-1])
 os.mkdir(html_web_dir)
 
@@ -129,7 +131,7 @@ with open('../autogen/all_data_autogen.json', 'w') as outfile:
     json.dump(alldata, outfile)
 
 
-os.system("git pull")
+
 os.system("git add ../")
 os.system("git commit -a -m \"Auto-gen update\"")
 os.system("git push")
