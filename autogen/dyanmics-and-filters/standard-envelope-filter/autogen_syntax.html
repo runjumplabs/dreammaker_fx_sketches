@@ -17,20 +17,19 @@
  * DreamMaker FX / www.dreammakerfx.com
  *****************************************************************************/
 /*
-Describe a bit about how your effect works.  Feel free to use multiple lines, 
-just don't delete or change any of the field names. 
 
-Effect name: Add a clever name
-Effect description:  What does it do
+Effect name: Triple Envelope Filter
+Effect description:  An envelope filter that uses three filters instead of one
+to create more interesting and exotic tones that mimic the vocal track.
 
-Left pot label: left pot label
-Left pot function: describe left pot function
+Left pot label: Speed
+Left pot function: Attack speed of the envelope filter
 
-Center pot label: center pot label
-Center pot function: describe center pot function
+Center pot label: Sensitivity
+Center pot function: How far the filters sweep when a note is played
 
-Right pot label: right pot label
-Right pot function: describe right pot function
+Right pot label: Resonance 
+Right pot function: Resonance of the filters
 
 Left footswitch label: 
 Left footswitch function: describe left footswitch function
@@ -170,6 +169,10 @@ void loop() {
 
   // Add an event if pot 2 has changed
   if (pedal.pot_right.has_changed()) { 
+    wah_filter_1.set_resonance(pedal.pot_right.val * 8.0);
+    wah_filter_2.set_resonance(pedal.pot_right.val * 8.0);
+    wah_filter_3.set_resonance(pedal.pot_right.val * 8.0);
+    gain_up.set_gain(pedal.pot_right.val * 3.0);
   } 
 
   // Service 
