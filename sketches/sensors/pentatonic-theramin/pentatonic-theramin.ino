@@ -25,7 +25,7 @@ Right footswitch label:
 Right footswitch function: Not used
 
 Youtube Url: https://www.youtube.com/watch?v=Pbnx5vn5iOc
-Soundcloud Url: optional, add a URL to a soundcloud audio clip
+Soundcloud Url: 
 
 Created by: DreamMaker
 DreamMakerFx package version: 1.5.1

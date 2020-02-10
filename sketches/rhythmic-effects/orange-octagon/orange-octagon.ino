@@ -27,9 +27,9 @@ Right footswitch function: Tap a few times to set the speed of the slicer
 Youtube Url:
 Soundcloud Url: 
 
-Created by: your alias
-DreamMakerFx package version: DreamMakerFx package version used x.y.z (e.g. 1.4.2)
-Version: version of your sketch (e.g. 1.0)
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
 */
 #include <dreammakerfx.h>
 
