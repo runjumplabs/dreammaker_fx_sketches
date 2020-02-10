@@ -1,0 +1,149 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+
+Effect name: The Separator 
+Effect description:  Sends all low notes through a delay so you can create rhythmic 
+repeating low patterns by playing low notes.  And then play over them.  The effect
+uses a tight low-pass filter to cut off all frequencies above 100-300Hz (controlled
+via left pot).  The output of this runs through a compressor to make the bass notes 
+solid with even volume.  And then the output of the compressor runs into the delay.
+
+Left pot label: Low pass cutoff
+Left pot function: The cutoff frequency of filter feeding delay
+
+Center pot label: Delay time
+Center pot function: Length of time between echoes
+
+Right pot label: Bass gain
+Right pot function: Output level of repeating bass notes
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Tap delay
+Right footswitch function: Tap it a few times at a set interval and the delay will lock on
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">/*
+
+                +----------+   +------------+   +----------+   +-------+
+                |          |   |            |   |          |   |       |
+Instr In +--+--&gt;+ Low-pass +--&gt;+ Compressor +--&gt;+  Delay   +--&gt;+       |   +--&gt; Amp out
+            |   |          |   |            |   |          |   |       |   |
+            |   +----------+   +------------+   +----------+   | Mix 2 |   |
+            |                                                  |       +---+
+            |                                                  |       |
+            +-------------------------------------------------&gt;+       |
+                                                               |       |
+                                                               +-------+
+
+  Created with http://asciiflow.com/
+
+
+ */</span>
+
+<span class="hljs-function">fx_biquad_filter    <span class="hljs-title">low_cutoff</span><span class="hljs-params">(<span class="hljs-number">250.0</span>,              <span class="hljs-comment">// Initial filter cutoff freq</span>
+                        <span class="hljs-number">1.0</span>,                <span class="hljs-comment">// Normal resonance</span>
+                        BIQUAD_TYPE_LPF,    <span class="hljs-comment">// Filter type</span>
+                        BIQUAD_ORDER_8)</span></span>;
+
+<span class="hljs-function">fx_compressor       <span class="hljs-title">compressor</span><span class="hljs-params">(<span class="hljs-number">-30</span>,       <span class="hljs-comment">// Threshold in dB</span>
+                                <span class="hljs-number">40</span>,       <span class="hljs-comment">// Ratio</span>
+                                <span class="hljs-number">20</span>,       <span class="hljs-comment">// Attack time (ms)</span>
+                                <span class="hljs-number">1000</span>,     <span class="hljs-comment">// Release time (ms)</span>
+                                <span class="hljs-number">1.0</span>)</span></span>;     <span class="hljs-comment">// Output gain</span>
+
+<span class="hljs-function">fx_pitch_shift      <span class="hljs-title">pitch_down</span><span class="hljs-params">(<span class="hljs-number">0.50</span>)</span></span>;       <span class="hljs-comment">// Pitch shift down by one octave</span>
+
+
+<span class="hljs-function">fx_delay            <span class="hljs-title">bass_delay</span><span class="hljs-params">(<span class="hljs-number">3000.0</span>, <span class="hljs-number">0.93</span>)</span></span>;
+<span class="hljs-function">fx_gain             <span class="hljs-title">bass_gain</span><span class="hljs-params">(<span class="hljs-number">2.0</span>)</span></span>;
+
+fx_mixer_2          mix2;                   <span class="hljs-comment">// Mixer utility</span>
+                        
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init(<span class="hljs-literal">true</span>);
+
+  <span class="hljs-comment">// Route audio</span>
+  pedal.route_audio(pedal.instr_in, low_cutoff.input);
+  pedal.route_audio(low_cutoff.output, compressor.input);
+  pedal.route_audio(compressor.output, bass_delay.input);
+  pedal.route_audio(bass_delay.output, bass_gain.input);
+  pedal.route_audio(bass_gain.output, mix2.input_1);
+
+  pedal.route_audio(pedal.instr_in, mix2.input_2);
+  pedal.route_audio(mix2.output, pedal.amp_out);
+
+  <span class="hljs-comment">// Left foot switch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Right foot switch is tap delay length</span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+    
+  pedal.run();
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your main code here, to run repeatedly:</span>
+
+  <span class="hljs-comment">// If new delay time has been tapped in, use that</span>
+  <span class="hljs-keyword">if</span> (pedal.new_tap_interval()) { 
+    bass_delay.set_length_ms(pedal.get_tap_interval_ms());
+  } 
+  
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    low_cutoff.set_freq(<span class="hljs-number">50</span> + pedal.pot_left.val*<span class="hljs-number">300.0</span>);
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    <span class="hljs-keyword">float</span> steps = round(pedal.pot_center.val * <span class="hljs-number">8.0</span>)/<span class="hljs-number">8.0</span>;
+    bass_delay.set_length_ms(<span class="hljs-number">500</span> + <span class="hljs-number">2000</span> * steps);
+
+    <span class="hljs-comment">// When we change the delay lenght with a pot, also update the flashing light</span>
+    pedal.set_tap_blink_rate_ms(<span class="hljs-number">500</span> + <span class="hljs-number">2000</span> * steps);
+    
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    bass_gain.set_gain(<span class="hljs-number">1.0</span> + pedal.pot_right.val*<span class="hljs-number">4.0</span>);
+  }
+
+
+   <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

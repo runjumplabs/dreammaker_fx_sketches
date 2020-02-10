@@ -1,0 +1,183 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+
+Effect name: Double looper
+Effect description:   This effect uses two independent loopers.  The duration 
+of the second looper is synchronized to the first.  Hold down the left footswitch 
+to record the first loop.  Then hold down the right footswitch to record a second layer.
+Tapping either of the footswitches after the record will clear that loop.
+The left pot controls loop 1 volume, the right pot controls loop 2 volume and the 
+center pot controls a gentle low-pass filter over the loops.
+
+
+Left pot label: Primary loop mix
+Left pot function: Sets volume of primary loop controlled with left switch
+
+Center pot label: Filter
+Center pot function: Sets cutoff of low-pass filter that loops run through
+
+Right pot label: Secondary loop mix
+Right pot function: Sets the volume of the secondary loop controlled with right swtich
+
+Left footswitch label: Record primary
+Left footswitch function: Records the primary loop
+
+Right footswitch label: Record secondary
+Right footswitch function: Records the secondary loop
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/</span>
+
+<span class="hljs-comment">/**
+
+                    +-----------+
+                    |           |
+              +----&gt;+ looper1   +---------+
+              |     |           |         |
+              |     +----+------+         v
+              |          |           +----+-----+    +-----------+
+              |          |           |          |    |           |
+Instr In +----+          |sync       | mixer 2  +---&gt;+ loop_filt +-&gt;Amp Out
+              |          |           |          |    |           |
+              |          v           +----+-----+    +-----------+
+              |     +----+------+         ^
+              |     |           |         |
+              +----&gt;+ looper2   +---------+
+                    |           |
+                    +-----------+
+
+
+Created with http://asciiflow.com/
+
+ */</span>
+
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">// First looper set to max length of 15 seconds</span>
+<span class="hljs-function">fx_looper <span class="hljs-title">looper1</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,        <span class="hljs-comment">// Dry mix of clean guitar</span>
+                  <span class="hljs-number">0.6</span>,        <span class="hljs-comment">// Loop mix</span>
+                  <span class="hljs-number">15</span>,         <span class="hljs-comment">// Maximum loop length in seconds</span>
+                  <span class="hljs-literal">false</span>)</span></span>;     <span class="hljs-comment">// Disable FX send / receive </span>
+
+<span class="hljs-comment">// Second looper set to max length of 15 seconds</span>
+<span class="hljs-function">fx_looper <span class="hljs-title">looper2</span><span class="hljs-params">(<span class="hljs-number">0.0</span>,        <span class="hljs-comment">// Dry mix is 0.0 on this one since the other looper is passing guitar </span>
+                  <span class="hljs-number">0.6</span>,        <span class="hljs-comment">// Loop mix</span>
+                  <span class="hljs-number">15</span>,         <span class="hljs-comment">// Maximum loop length in seconds </span>
+                  <span class="hljs-literal">false</span>)</span></span>;     <span class="hljs-comment">// Disable FX send / receive </span>
+
+<span class="hljs-comment">// Output low-pass filter</span>
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">loop_filt</span><span class="hljs-params">(<span class="hljs-number">400.0</span>,            <span class="hljs-comment">// Initial cutoff is 400Hz</span>
+                            <span class="hljs-number">1.0</span>,              <span class="hljs-comment">// Resonance is 1.0 (standard)</span>
+                            BIQUAD_TYPE_LPF)</span></span>; <span class="hljs-comment">// Filter type is lowpass</span>
+
+<span class="hljs-comment">// Two channel mixer to mix loop outputs</span>
+fx_mixer_2 mixer_2ch;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  
+  <span class="hljs-comment">// Initialize the pedal</span>
+  pedal.init();  
+
+  <span class="hljs-comment">// Route instrument in to first looper</span>
+  pedal.route_audio(pedal.instr_in, looper1.input);
+  pedal.route_audio(looper1.output, mixer_2ch.input_1);
+
+  <span class="hljs-comment">// Route instrument in to second looper</span>
+  pedal.route_audio(pedal.instr_in, looper2.input);
+  pedal.route_audio(looper2.output, mixer_2ch.input_2);
+
+  <span class="hljs-comment">// Mix looper outputs, send through filter and then to amp out</span>
+  pedal.route_audio(mixer_2ch.output, loop_filt.input);
+  pedal.route_audio(loop_filt.output, pedal.amp_out);
+
+  <span class="hljs-comment">// Link the length of the first loop to the lenght of the second loop</span>
+  pedal.route_control(looper1.loop_length_seconds, looper2.loop_length_seconds_set);
+  
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+}
+
+<span class="hljs-keyword">bool</span> looper_1_active = <span class="hljs-literal">false</span>;
+<span class="hljs-keyword">bool</span> looper_2_active = <span class="hljs-literal">false</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// When left foot switch held down, record a loop (if one not playing)</span>
+  <span class="hljs-comment">// or stop the loop that is currently playing and get ready for another </span>
+  <span class="hljs-comment">// recording</span>
+  <span class="hljs-keyword">if</span> (pedal.button_pressed(FOOTSWITCH_LEFT, <span class="hljs-literal">true</span>)) {
+    <span class="hljs-keyword">if</span> (!looper_1_active) {
+      looper1.start_loop_recording();
+      looper_1_active = <span class="hljs-literal">true</span>;
+    } <span class="hljs-keyword">else</span> {
+      looper1.stop_loop_playback();
+      looper_1_active = <span class="hljs-literal">false</span>;
+    }
+  }
+  <span class="hljs-keyword">if</span> (pedal.button_released(FOOTSWITCH_LEFT, <span class="hljs-literal">true</span>)) {
+    <span class="hljs-keyword">if</span> (looper_1_active) {
+      looper1.stop_loop_recording();      
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.button_pressed(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>)) {
+   <span class="hljs-keyword">if</span> (!looper_2_active) {
+      looper2.start_loop_recording();
+      looper_2_active = <span class="hljs-literal">true</span>;
+    } <span class="hljs-keyword">else</span> {
+      looper2.stop_loop_playback();
+      looper_2_active = <span class="hljs-literal">false</span>;
+    }
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.button_released(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>)) {
+    <span class="hljs-keyword">if</span> (looper_2_active) {
+      looper2.stop_loop_recording();      
+    }
+  }  
+
+  <span class="hljs-comment">// Left pot changes the volume of the first loop</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    looper1.set_loop_mix(pedal.pot_left.val);
+  }
+  <span class="hljs-comment">// Right pot changes the volume of the second loop</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    looper2.set_loop_mix(pedal.pot_right.val);
+  }  
+  
+  <span class="hljs-comment">// Center pot changes low-pass filter from 200 to 2000 Hz</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    loop_filt.set_freq(<span class="hljs-number">200.0</span> + pedal.pot_center.val*<span class="hljs-number">1800.0</span>);
+  }    
+  
+    <span class="hljs-comment">// Service </span>
+  pedal.service();
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

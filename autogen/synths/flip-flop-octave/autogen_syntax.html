@@ -1,0 +1,110 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Flip-flip Octaviser
+
+Effect description: 
+Uses the FLIP FLOP OCTAVE model in the destructor to emulate a flip flop circuit to
+generate tones at the frequency you're playing at or octaves below.  This is basically
+how the original Boss OC-2 pedals worked.  
+
+
+Left pot label: Octave
+Left pot function: Sets the frequency of the flip-flop.  Full left is same as note you're playing
+                   and full right is 2 octaves down.
+
+Center pot label: Tone
+Center pot function: Sets tone of the low-pass filter following the desctuctor
+
+Right pot label: Clean mix
+Right pot function: Sets the amount of clean signal mixed in.
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Not used
+Right footswitch function: Nothing
+
+Youtube Url:
+Soundcloud Url:
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Sketch version: 1.0
+*/</span> 
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+                              
+<span class="hljs-function">fx_destructor       <span class="hljs-title">destruct</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,                 <span class="hljs-comment">// Octaves down</span>
+                             <span class="hljs-number">0.0</span>,                 <span class="hljs-comment">// Clean mix</span>
+                             <span class="hljs-number">1.0</span>,                 <span class="hljs-comment">// Output gain</span>
+                             FLIP_FLOP_OCTAVE)</span></span>;   <span class="hljs-comment">// Destructor model - flip flop</span>
+
+<span class="hljs-function">fx_biquad_filter    <span class="hljs-title">tone_filter</span><span class="hljs-params">(<span class="hljs-number">800.0</span>,              <span class="hljs-comment">// Initial filter cutoff freq</span>
+                                <span class="hljs-number">1.0</span>,                <span class="hljs-comment">// Standard resonance </span>
+                                BIQUAD_TYPE_LPF,    <span class="hljs-comment">// Filter type is lowpass</span>
+                                BIQUAD_ORDER_6)</span></span>;    <span class="hljs-comment">// 6th order filter</span>
+
+
+<span class="hljs-function">fx_gain             <span class="hljs-title">out_gain</span><span class="hljs-params">(<span class="hljs-number">1.0</span>)</span></span>;
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+
+  <span class="hljs-comment">// Initialize the pedal!</span>
+  pedal.init();
+
+  <span class="hljs-comment">// Route audio through distortion, tone filter and then output gain</span>
+  pedal.route_audio(pedal.instr_in, destruct.input);
+  pedal.route_audio(destruct.output, tone_filter.input);
+  pedal.route_audio(tone_filter.output, pedal.amp_out);
+
+  <span class="hljs-comment">// left footswitch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// Left pot is distortion drive</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    <span class="hljs-comment">// Parameter 1 on the flip flop octave model is mapped to octave drop</span>
+    destruct.set_param_1(pedal.pot_left.val * <span class="hljs-number">3</span>);
+  }
+
+  <span class="hljs-comment">// Center pot is tone knob from 200 to 1200Hz</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    tone_filter.set_freq(<span class="hljs-number">200.0</span> + pedal.pot_center.val*<span class="hljs-number">1400.0</span>);
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-comment">// Parameter 2 on the flip flop octave is mapped to clean mix</span>
+    destruct.set_param_2(pedal.pot_right.val);
+  }
+
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

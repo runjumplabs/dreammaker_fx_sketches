@@ -1,0 +1,132 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">"dreammakerfx.h"</span></span>
+
+<span class="hljs-comment">/*
+A harmonic tremelo is basically a pair of tremelos that are 180 degrees out of 
+phase.  The first tremelo is run through a low pass filter and the second
+tremelo is run through a high pass filter.  The result is a tremelo type 
+sounds but the volume remains rather constant.
+
+             +-------+    +----------------------+    +-------+
+             |       |    |                      |    |       |
+             | LPF   |    | Tremelo              |    |       |
+         +--&gt;+ 500Hz +---&gt;+ (0 initial phase)    +---&gt;+       +-+
+         |   |       |    |                      |    |       | |
+         |   +-------+    +----------------------+    |       | |
+Instr In |                                            | Mix 2 |  &gt; Amp Out
+         |   +-------+    +----------------------+    |       | |
+         |   |       |    |                      |    |       | |
+         +--&gt;+ HPF   +---&gt;+ Tremelo              +---&gt;+       +-+
+             | 500Hz |    | (180  initial phase) |    |       |
+             |       |    |                      |    |       |
+             +-------+    +----------------------+    +-------+
+
+ */</span>
+
+<span class="hljs-comment">// Amplitude modulator #1</span>
+<span class="hljs-function">fx_amplitude_mod    <span class="hljs-title">mod1</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,     <span class="hljs-comment">// Rate (Hz)</span>
+                         <span class="hljs-number">0.8</span>,     <span class="hljs-comment">// Depth (0.0-&gt;1.0)</span>
+                         <span class="hljs-number">0</span>,       <span class="hljs-comment">// Initial phase (degrees)</span>
+                         OSC_SINE,<span class="hljs-comment">// Oscillator type</span>
+                         <span class="hljs-literal">false</span>)</span></span>;  <span class="hljs-comment">// Don't use external LFO</span>
+<span class="hljs-comment">// Amplitude modulator #2                         </span>
+<span class="hljs-function">fx_amplitude_mod    <span class="hljs-title">mod2</span><span class="hljs-params">(<span class="hljs-number">1.0</span>,     <span class="hljs-comment">// Rate (Hz)</span>
+                         <span class="hljs-number">0.8</span>,     <span class="hljs-comment">// Depth (0.0-&gt;1.0)</span>
+                         <span class="hljs-number">180</span>,     <span class="hljs-comment">// Initial phase (degrees)</span>
+                         OSC_SINE,<span class="hljs-comment">// Oscillator type </span>
+                         <span class="hljs-literal">false</span>)</span></span>;  <span class="hljs-comment">// Don't use external LFO</span>
+
+<span class="hljs-comment">// Filters for splitting low and high ends</span>
+<span class="hljs-function">fx_biquad_filter    <span class="hljs-title">lpf</span><span class="hljs-params">(<span class="hljs-number">500.0</span>,              <span class="hljs-comment">// Initial filter cutoff freq</span>
+                        <span class="hljs-number">1.0</span>,                <span class="hljs-comment">// Normal resonance</span>
+                        BIQUAD_TYPE_LPF,    <span class="hljs-comment">// Filter type</span>
+                        BIQUAD_ORDER_6)</span></span>;
+                        
+<span class="hljs-function">fx_biquad_filter    <span class="hljs-title">hpf</span><span class="hljs-params">(<span class="hljs-number">500.0</span>,              <span class="hljs-comment">// Initial filter cutoff freq</span>
+                        <span class="hljs-number">1.0</span>,                <span class="hljs-comment">// Normal resonance</span>
+                        BIQUAD_TYPE_HPF,    <span class="hljs-comment">// Filter type</span>
+                        BIQUAD_ORDER_6)</span></span>;
+
+
+<span class="hljs-comment">// Simple two channel mixer</span>
+fx_mixer_2    mix2;
+
+ <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+
+  pedal.init(<span class="hljs-literal">true</span>);
+
+  pedal.route_audio(pedal.instr_in, lpf.input);
+  pedal.route_audio(pedal.instr_in, hpf.input);
+  pedal.route_audio(lpf.output, mod1.input);
+  pedal.route_audio(hpf.output, mod2.input);
+  
+  pedal.route_audio(mod1.output, mix2.input_1);
+  pedal.route_audio(mod2.output, mix2.input_2);
+
+  pedal.route_audio(mix2.output, pedal.amp_out);
+
+  <span class="hljs-comment">// Left foot switch is bypass</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Right foot switch is tap</span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+  
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run(); 
+}
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> now = millis();
+
+  <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();
+
+  <span class="hljs-comment">// If a new tempo has been tapped in, update the pedal</span>
+  <span class="hljs-keyword">if</span> (pedal.new_tap_interval()) { 
+    mod1.set_rate_hz(pedal.get_tap_freq_hz());
+    mod2.set_rate_hz(pedal.get_tap_freq_hz());
+  } 
+
+
+  <span class="hljs-comment">// Pot 0 / right pot changes the rate of the tremelo from 0 to 4Hz</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_0.has_changed()) {
+    <span class="hljs-keyword">float</span> new_rate_hz = pedal.pot_0.val*<span class="hljs-number">4.0</span>;
+    mod1.set_rate_hz(new_rate_hz);
+    mod2.set_rate_hz(new_rate_hz);
+    pedal.set_tap_blink_rate_hz(new_rate_hz);
+  }
+
+  <span class="hljs-comment">// Pot 1 / middle pot changes cross over frequency between 300 and 1700Hz</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_1.has_changed()) {
+    lpf.set_freq(<span class="hljs-number">300.0</span> + pedal.pot_1.val*<span class="hljs-number">700.0</span>);
+    hpf.set_freq(<span class="hljs-number">300.0</span> + pedal.pot_1.val*<span class="hljs-number">700.0</span>);
+  }
+
+  <span class="hljs-comment">// Pot 2 / left sets the depth of the modulation</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_2.has_changed()) {
+    mod1.set_depth(pedal.pot_2.val);
+    mod2.set_depth(pedal.pot_2.val);
+    
+  }
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

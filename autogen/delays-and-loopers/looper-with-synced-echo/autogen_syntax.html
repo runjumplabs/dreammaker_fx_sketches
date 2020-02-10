@@ -1,0 +1,162 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Echo looper 
+Effect description:  This is a basic looper pedal that uses the route_control() 
+function to pass the tapped loop length along to an echo effect. The echo effect 
+is set to 1/4 the lenght of the loop so each time a new loop is set, the echo time 
+is updated to.  The looper output also runs through a low-pass filter with a bit 
+of resonance so you can turn the recorded loop into a cool background droning 
+pattern.
+
+Left pot label: Echo feedback
+Left pot function: Feedback amount for echoes (how long it takes them to disappear)
+
+Center pot label: Looper mix
+Center pot function: Amount of looper in the output mix
+
+Right pot label: Looper filter
+Right pot function: Low pass filter with some gentle resonance on the output of the looper
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Record / reset
+Right footswitch function: Hold down to record a loop. Once loop is recorded, tap again
+to clear the loop.  Now you're ready to record again.
+
+Youtube Url: 
+Soundcloud Url: 
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.1
+Version: 1.0
+*/</span>
+<span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+<span class="hljs-comment">/*
+
+                         Loop duration sets delay length
+                    +-----------------------------------------+
+                    |                                         |
+                +---+----+    +--------+   +--------+   +-----v-----+
+                |        |    |        |   |        |   |           |
+                |        |    |        |   |        |   |           |
+Instr In +--+--&gt;+ Looper +---&gt;+ Filter +--&gt;+        +--&gt;+   Delay   +-----&gt; Amp Out
+            |   |        |    |        |   |        |   |           |
+            |   |        |    |        |   |        |   |           |
+            |   +--------+    +--------+   |  Mix 2 |   +-----------+
+            |                              |        |
+            +-----------------------------&gt;+        |
+                                           |        |
+                                           |        |
+                                           +--------+
+
+ Created with http://asciiflow.com/
+ 
+ */</span>
+
+<span class="hljs-function">fx_looper   <span class="hljs-title">loopy</span><span class="hljs-params">( <span class="hljs-number">0.0</span>,   <span class="hljs-comment">// No dry mix</span>
+                   <span class="hljs-number">0.8</span>,   <span class="hljs-comment">// Looped audio mix</span>
+                   <span class="hljs-number">12</span>,    <span class="hljs-comment">// Max loop length in seconds</span>
+                   <span class="hljs-literal">false</span>)</span></span>; <span class="hljs-comment">// Disable FX processing as audio enters the loop</span>
+
+<span class="hljs-function">fx_delay    <span class="hljs-title">echo</span><span class="hljs-params">(<span class="hljs-number">8000</span>,    <span class="hljs-comment">// Max lenght of 8 seconds</span>
+                 <span class="hljs-number">0.7</span> )</span></span>;   <span class="hljs-comment">// Feedback of 0.7</span>
+
+<span class="hljs-function">fx_biquad_filter    <span class="hljs-title">looper_filter</span><span class="hljs-params">(<span class="hljs-number">300.0</span>,                 <span class="hljs-comment">// 300 Hz starting frequency</span>
+                                   <span class="hljs-number">2.0</span>,                  <span class="hljs-comment">// A tiny bit of resonance to provide some color</span>
+                                   <span class="hljs-number">0.0</span>,                  <span class="hljs-comment">// Filter gain: 0db</span>
+                                   BIQUAD_TYPE_LPF,      <span class="hljs-comment">// Type is low-pass filter</span>
+                                   TRANS_VERY_SLOW,      <span class="hljs-comment">// Transition speed very slow since controlling with pots</span>
+                                   BIQUAD_ORDER_4)</span></span>;      <span class="hljs-comment">// Type is bandpass     </span>
+fx_mixer_2          mix2;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+  pedal.init();
+
+  pedal.route_audio(pedal.instr_in, loopy.input);
+  pedal.route_audio(loopy.output, looper_filter.input);
+  pedal.route_audio(looper_filter.output, mix2.input_1);
+  pedal.route_audio(pedal.instr_in, mix2.input_2);
+  pedal.route_audio(mix2.output, echo.input);
+  pedal.route_audio(echo.output, pedal.amp_out);
+
+  <span class="hljs-comment">// Connect the tapped loop length of our looper to the delay size and divide by 1/4 and convert to milliseconds (so four echoes per loop)</span>
+  pedal.route_control(loopy.loop_length_seconds, 
+                      echo.length_ms, 
+                      <span class="hljs-number">250.0</span>,        <span class="hljs-comment">// Scale by 1000 * 1/4 (convert to ms and then divide by 4 so we get four echoes)</span>
+                      <span class="hljs-number">0</span>);           <span class="hljs-comment">// Offset = 0</span>
+
+
+  <span class="hljs-comment">// Left footswitch bypasses effect</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+  
+  <span class="hljs-comment">// Run this effect</span>
+  pedal.run();
+
+}
+
+<span class="hljs-keyword">bool</span> looper_active = <span class="hljs-literal">false</span>;
+  
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-comment">// When left foot switch held down, record a loop (if one not playing)</span>
+  <span class="hljs-comment">// or stop the loop that is currently playing and get ready for another </span>
+  <span class="hljs-comment">// recording</span>
+  <span class="hljs-keyword">if</span> (pedal.button_pressed(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>)) {
+    <span class="hljs-keyword">if</span> (!looper_active) {
+      loopy.start_loop_recording();
+      looper_active = <span class="hljs-literal">true</span>;
+    } <span class="hljs-keyword">else</span> {
+      loopy.stop_loop_playback();
+      looper_active = <span class="hljs-literal">false</span>;
+    }
+  }
+  <span class="hljs-keyword">if</span> (pedal.button_released(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>)) {
+    <span class="hljs-keyword">if</span> (looper_active) {
+      loopy.stop_loop_recording();      
+    }
+  }
+
+  <span class="hljs-comment">// Left pot changes the feedback of the delay (determining how long the echoes last)</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    echo.set_feedback(pedal.pot_left.val);
+  }
+
+  <span class="hljs-comment">// Center pot sets amount of looper in final mix</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    loopy.set_loop_mix(pedal.pot_center.val*<span class="hljs-number">2.0</span>);
+  }  
+
+  <span class="hljs-comment">// Right pot set low-pass filter on loop</span>
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    <span class="hljs-comment">// The .val_log_inv provides an inverse log curve that's good for setting frequencies</span>
+    looper_filter.set_freq(<span class="hljs-number">200.0</span> + <span class="hljs-number">3000.0</span> * pedal.pot_right.val_log_inv);
+  }
+
+  <span class="hljs-comment">// Service </span>
+  pedal.service();
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

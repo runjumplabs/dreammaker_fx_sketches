@@ -55,10 +55,7 @@ for root, subdirs, files in os.walk(rootdir):
                 
                 # Assign category based on directory
                 p = this_data['path'].split("/")
-                if p[2] == "basics":
-                    result['category'] = "Basics"
-                elif p[2] == "categories":
-                    result['category'] = p[3].title()
+                result['category'] = p[2].title()
 
                 print(result['category'])
 

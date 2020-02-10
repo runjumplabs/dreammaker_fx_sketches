@@ -56,6 +56,13 @@ void setup() {
   // the bypass switch
   // pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, true);
 
+  // Optional code to print out the routing details to console
+  if (false) {
+    pedal.print_instance_stack();
+    pedal.print_routing_table();
+    pedal.print_param_tables();
+  }
+
   // Run this effect
   pedal.run();
 

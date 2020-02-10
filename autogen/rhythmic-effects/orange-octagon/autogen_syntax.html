@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-function">fx_slicer   <span class="hljs-title">slice4</span><span class="hljs-params">(<span class="hljs-number">1000.0</span>, <span class="hljs-number">4</span>)</span></span>;
+
+
+<span class="hljs-function">fx_destructor <span class="hljs-title">dist1</span><span class="hljs-params">(<span class="hljs-number">0.1</span>, <span class="hljs-number">32</span>, SMOOTH_CLIP)</span></span>;
+<span class="hljs-function">fx_pitch_shift <span class="hljs-title">oct_down</span><span class="hljs-params">(<span class="hljs-number">0.5</span>)</span></span>;
+fx_mixer_4    mix4;
+
+<span class="hljs-comment">// Instances of the four bandpass (BPF) filters at different frequencies</span>
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt1</span><span class="hljs-params">(<span class="hljs-number">200</span>, <span class="hljs-number">2</span>, BIQUAD_TYPE_BPF, BIQUAD_ORDER_6)</span></span>;
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt2</span><span class="hljs-params">(<span class="hljs-number">400</span>, <span class="hljs-number">1.5</span>, BIQUAD_TYPE_BPF, BIQUAD_ORDER_6)</span></span>;
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt3</span><span class="hljs-params">(<span class="hljs-number">600</span>, <span class="hljs-number">1</span>, BIQUAD_TYPE_BPF, BIQUAD_ORDER_6)</span></span>;
+<span class="hljs-function">fx_biquad_filter  <span class="hljs-title">filt4</span><span class="hljs-params">(<span class="hljs-number">800</span>, <span class="hljs-number">1</span>, BIQUAD_TYPE_BPF, BIQUAD_ORDER_6)</span></span>;
+
+
+<span class="hljs-function">fx_gain   <span class="hljs-title">out_gain</span><span class="hljs-params">(<span class="hljs-number">4.0</span>)</span></span>;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// put your setup code here, to run once:</span>
+  pedal.init(<span class="hljs-literal">true</span>);     <span class="hljs-comment">// Init, debug enabled</span>
+
+  pedal.route_audio(pedal.instr_in, dist1.input);
+  pedal.route_audio(dist1.output, slice4.input);
+
+  pedal.route_audio(slice4.output_1, filt1.input);
+  pedal.route_audio(slice4.output_2, filt2.input);
+  pedal.route_audio(slice4.output_3, filt3.input);
+  pedal.route_audio(slice4.output_4, filt4.input);
+<span class="hljs-comment">/*
+  pedal.route_audio(filt1.output, delay1.input);
+  pedal.route_audio(filt2.output, delay2.input);
+  pedal.route_audio(filt3.output, delay3.input);
+  pedal.route_audio(filt4.output, /*oct_down.input);
+  pedal.route_audio(oct_down.output, delay4.input); */</span>
+
+  pedal.route_audio(filt1.output, mix4.input_1);
+  pedal.route_audio(filt2.output, mix4.input_2);
+  pedal.route_audio(filt3.output, mix4.input_3);
+  pedal.route_audio(filt4.output, mix4.input_4);
+
+  pedal.route_audio(mix4.output, out_gain.input);
+  pedal.route_audio(out_gain.output, pedal.amp_out);
+
+  pedal.add_bypass_button(FOOTSWITCH_LEFT);
+
+  <span class="hljs-comment">// Right foot switch is tap loop length</span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+
+  pedal.run();
+  
+  
+}
+
+<span class="hljs-keyword">float</span> spread = <span class="hljs-number">100.0</span>;
+<span class="hljs-keyword">float</span> base_freq = <span class="hljs-number">70.0</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+
+  <span class="hljs-keyword">if</span> (pedal.new_tap_interval()) { 
+    slice4.set_period_ms(pedal.get_tap_interval_ms());
+  } 
+  
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) { 
+    base_freq = <span class="hljs-number">70.0</span> + pedal.pot_left.val* <span class="hljs-number">600.0</span>;
+    filt1.set_freq(base_freq + spread);
+    filt2.set_freq(base_freq + spread*<span class="hljs-number">2</span>);
+    filt3.set_freq(base_freq + spread*<span class="hljs-number">3</span>);
+    filt4.set_freq(base_freq + spread*<span class="hljs-number">4</span>);      
+  } 
+
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    out_gain.set_gain( pedal.pot_center.val * <span class="hljs-number">4.0</span>);
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    spread = pedal.pot_right.val * <span class="hljs-number">600.0</span>;
+    filt1.set_freq(base_freq + spread);
+    filt2.set_freq(base_freq + spread*<span class="hljs-number">2</span>);
+    filt3.set_freq(base_freq + spread*<span class="hljs-number">3</span>);
+    filt4.set_freq(base_freq + spread*<span class="hljs-number">4</span>);      
+    
+  }
+
+  
+   <span class="hljs-comment">// Run pedal service to take care of stuff</span>
+  pedal.service();
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>
