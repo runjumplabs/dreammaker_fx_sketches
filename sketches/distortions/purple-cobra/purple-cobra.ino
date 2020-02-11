@@ -28,7 +28,7 @@ Youtube Url: https://youtu.be/e9hNA7tGwJw
 Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.5.1
+DreamMakerFx package version: 1.5.2
 Sketch version: 1.0
 */ 
 #include <dm_fx.h>
