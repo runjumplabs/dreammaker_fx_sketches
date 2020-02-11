@@ -27,5 +27,6 @@ if (process.argv.length < 4) {
 		highlightedCode = hljs.highlight('cpp', source_code).value;
 		highlightedCode = html_template.replace("__CODE__",highlightedCode);
 		fs.writeFileSync(filename_out, highlightedCode);
+		console.log("successfully created syntax highlihted code")
 	}
 }
