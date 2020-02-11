@@ -40,6 +40,7 @@ for root, subdirs, files in os.walk(rootdir):
             this_data['html_path'] = html_html_root + sketch_path.replace("../sketches","").replace(filename,"autogen_syntax.html")
 
             if False:
+                print("Abort mission!")
                 print(sketch_path)
                 print(html_html_root)
                 print(filename)

@@ -1,0 +1,197 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;dreammakerfx.h&gt;</span></span>
+
+<span class="hljs-comment">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/</span>
+<span class="hljs-comment">/*
+Effect name: Multitudes
+
+Effect description: A variable length delay pedal where the feedback path of the 
+main delay ("driver") is routed to a secondary delay ("propagator").
+
+Left pot label: Feedback
+Left pot function: Amount of feedback ranging from 0.0 (no echo) to 1.0 (unending echo).
+
+Center pot label: Driver Delay Time
+Center pot function: Sets the time of the main ("driver") delay. Ranges up to 3000ms.
+
+Right pot label: Propagator Delay Time
+Right pot function: Sets the delay time of the secondary delay as a function of the driver time.
+
+	If the knob is set to noon (set to halfway):
+		The Propagation delay will be of the same length as the driver delay
+
+	If the knob is set between 6pm and noon (set between 0-5):
+		The Propagation delay will be *shorter* than the driver delay. 
+		Shortest possible propagator delay length is 1/4 the time of the driver delay. 
+
+	If the knob is set between noon and 6pm (set between 5-10):
+		The Propagation delay will be *longer* than the driver delay.
+		Longest possible propagation delay length is driver delay time * 4.
+
+Left footswitch label: Bypass
+Left footswitch function: Bypasses the effect
+
+Right footswitch label: Driver delay tap interval 
+Right footswitch function: Set the driver delay time via tapping.
+
+Youtube Url:
+Soundcloud Url: https://soundcloud.com/modusjonens/dream-lemur-multitudes-demo-track
+
+Created by: joedougherty
+DreamMakerFx package version: 1.5.1
+Sketch version: 1.0
+*/</span> 
+
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">float</span> max_delay_ms = <span class="hljs-number">3000.0</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">float</span> max_prop_factor = <span class="hljs-number">4.0</span>;
+<span class="hljs-keyword">const</span> <span class="hljs-keyword">float</span> max_prop_ms = max_delay_ms * max_prop_factor;
+
+<span class="hljs-function">fx_delay <span class="hljs-title">driver</span><span class="hljs-params">(
+    <span class="hljs-number">1000.0</span>,         <span class="hljs-comment">// Initial delay length of 1 second / 1000ms</span>
+    max_delay_ms,   <span class="hljs-comment">// Max delay</span>
+    <span class="hljs-number">0.5</span>,            <span class="hljs-comment">// Feedback value</span>
+    <span class="hljs-number">1.0</span>,            <span class="hljs-comment">// Clean mix</span>
+    <span class="hljs-number">0.7</span>,            <span class="hljs-comment">// Delay / echo mix</span>
+    <span class="hljs-literal">true</span>            <span class="hljs-comment">// Enable send/receive</span>
+)</span></span>;        
+
+<span class="hljs-function">fx_delay <span class="hljs-title">propagator</span><span class="hljs-params">(
+    <span class="hljs-number">1000.0</span>,         <span class="hljs-comment">// Initial delay length of 1 second / 1000ms</span>
+    max_prop_ms,    <span class="hljs-comment">// Max delay </span>
+    <span class="hljs-number">0.4</span>,            <span class="hljs-comment">// feedback value</span>
+    <span class="hljs-number">1.0</span>,            <span class="hljs-comment">// Clean mix</span>
+    <span class="hljs-number">0.5</span>,            <span class="hljs-comment">// Delay / echo mix</span>
+    <span class="hljs-literal">false</span>           <span class="hljs-comment">// Disable send/receive</span>
+)</span></span>; 
+
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">setup</span><span class="hljs-params">()</span> </span>{
+
+  pedal.init();
+  
+  <span class="hljs-comment">// Route audio through effects</span>
+  pedal.route_audio(pedal.instr_in, driver.input);
+  pedal.route_audio(driver.output, pedal.amp_out); 
+  
+  <span class="hljs-comment">// Route filter through delay fxsend/receive loop</span>
+  pedal.route_audio(driver.fx_send, propagator.input);
+  pedal.route_audio(propagator.output, driver.fx_receive);
+
+  <span class="hljs-comment">// Use left footswitch/LED to bypass effect</span>
+  pedal.add_bypass_button(FOOTSWITCH_LEFT); 
+
+  <span class="hljs-comment">// Right foot switch is tap delay length</span>
+  pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
+  
+  pedal.run(); 
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">float</span> <span class="hljs-title">get_driver_len</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-comment">// Helper function to get current driver delay length in ms</span>
+  
+  <span class="hljs-keyword">return</span> <span class="hljs-number">100.0</span> + pedal.pot_center.val*(max_delay_ms<span class="hljs-number">-100.0</span>);
+
+} 
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">update_driver</span><span class="hljs-params">()</span> </span>{  
+  <span class="hljs-comment">// Helper function to set the driver delay length in ms</span>
+
+  <span class="hljs-keyword">float</span> new_driver_len = get_driver_len();
+  driver.set_length_ms(new_driver_len);
+  pedal.set_tap_blink_rate_ms(new_driver_len);
+
+}
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">update_propagator</span><span class="hljs-params">(<span class="hljs-keyword">float</span> driver_delay_len)</span> </span>{
+  <span class="hljs-comment">// Helper function to set delay length on the propagator delay.</span>
+
+  <span class="hljs-comment">/*
+   * propagator delay time is a function of two values:
+   *  
+   *  1.) The delay time currently set on the driver delay
+   *  2.) The position of the Propagation Delay Ratio knob
+   * 
+   *  If the Propagation Delay Ratio knob is between noon and 6pm:
+   *    The Propagation delay knob position is mapped to prop_ratio: a value between [1, 4]
+   *    The Propagation delay time is set to: (Driver Delay Time * Prop Ratio) 
+   * 
+   *  If the Propagation Delay Ratio knob is between noon and 6pm:
+   *    The Propagation delay knob position is mapped to prop_ratio: a value between [4, 1] (note the direction change)
+   *    The Propagation delay time is set to: (Driver Delay Time / Prop Ratio) 
+   * 
+   *  If the Propagation Delay Ratio knob is set to noon: 
+   *    The Propagation delay is the same as the Driver Delay length.
+   */</span>
+  
+  <span class="hljs-keyword">float</span> prop_ratio, new_prop_len;
+    
+  <span class="hljs-keyword">if</span> (pedal.pot_right.val &gt; <span class="hljs-number">0.5</span>) {
+    prop_ratio = <span class="hljs-built_in">map</span>(pedal.pot_right.val, <span class="hljs-number">.5</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>, <span class="hljs-keyword">int</span>(max_prop_factor));
+    new_prop_len = driver_delay_len * prop_ratio;
+  } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (pedal.pot_right.val &lt; <span class="hljs-number">0.5</span>) {
+    prop_ratio = <span class="hljs-built_in">map</span>(pedal.pot_right.val, <span class="hljs-number">0</span>, <span class="hljs-number">.5</span>, <span class="hljs-keyword">int</span>(max_prop_factor), <span class="hljs-number">1</span>);
+    new_prop_len = driver_delay_len / prop_ratio;
+  } <span class="hljs-keyword">else</span> {
+    new_prop_len = driver_delay_len;
+  }
+   
+  propagator.set_length_ms(new_prop_len);
+
+}
+
+<span class="hljs-comment">/* This value will carry the most up-to-date
+ * value of the driver's time (in ms).
+ *
+ * We'll initialize it with the default driver delay length.
+ */</span>
+<span class="hljs-keyword">float</span> updated_driver_time = <span class="hljs-number">1000.0</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
+  
+  <span class="hljs-keyword">if</span> (pedal.pot_left.has_changed()) {
+    driver.set_feedback(pedal.pot_left.val);
+  }
+
+  <span class="hljs-keyword">if</span> (pedal.pot_center.has_changed()) {
+    update_driver();
+    update_propagator(get_driver_len());
+    updated_driver_time = get_driver_len();
+  }    
+
+  <span class="hljs-keyword">if</span> (pedal.new_tap_interval()) { 
+    <span class="hljs-keyword">float</span> new_tap_len = pedal.get_tap_interval_ms();
+    driver.set_length_ms(new_tap_len);
+    pedal.set_tap_blink_rate_ms(new_tap_len);
+    update_propagator(new_tap_len);
+    updated_driver_time = new_tap_len;
+  } 
+    
+  <span class="hljs-keyword">if</span> (pedal.pot_right.has_changed()) {
+    update_propagator(updated_driver_time);
+  }
+  
+  pedal.service(); 
+
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>
