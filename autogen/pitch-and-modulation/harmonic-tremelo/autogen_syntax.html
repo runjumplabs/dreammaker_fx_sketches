@@ -114,13 +114,13 @@ fx_mixer_2    mix2;
   pedal.add_tap_interval_button(FOOTSWITCH_RIGHT, <span class="hljs-literal">true</span>);
   
   <span class="hljs-comment">// Run this effect</span>
-  pedal.run(); 
+  pedal.<span class="hljs-built_in">run</span>(); 
 }
 
 
 <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">loop</span><span class="hljs-params">()</span> </span>{
 
-  <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> now = millis();
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> now = <span class="hljs-built_in">millis</span>();
 
   <span class="hljs-comment">// Run pedal service to take care of stuff</span>
   pedal.service();

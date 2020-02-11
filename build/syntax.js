@@ -1,8 +1,8 @@
 const hljs = require('highlight.js');
 var fs = require('fs');
 
-hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'));
-
+// hljs.registerLanguage('cpp', require('highlight.js/lib/languages/cpp'));
+hljs.registerLanguage('arduino', require('highlight.js/lib/languages/arduino'));
 // Open HTML template
 html_template = fs.readFileSync(__dirname+"/html_template.html", 'utf8');
 if (html_template.length == 0) {
@@ -24,7 +24,7 @@ if (process.argv.length < 4) {
     	console.log("Could not open input file")
 	} else {
 		
-		highlightedCode = hljs.highlight('cpp', source_code).value;
+		highlightedCode = hljs.highlight('arduino', source_code).value;
 		highlightedCode = html_template.replace("__CODE__",highlightedCode);
 		fs.writeFileSync(filename_out, highlightedCode);
 		console.log("successfully created syntax highlihted code")
