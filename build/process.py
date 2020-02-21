@@ -59,7 +59,7 @@ for root, subdirs, files in os.walk(rootdir):
             html_folder_path = html_html_root + sketch_path.replace("../sketches","").replace(filename,"")
 
             this_file_data['path'] = paths['sketch_path']
-            this_file_data['ino_path'] = paths['hosted_root_autogen'] + paths['sketch_path'] + paths['filename_full']
+            this_file_data['ino_path'] = paths['hosted_root_sketch'] + paths['sketch_path'] + paths['filename_full']
             this_file_data['html_path'] = paths['hosted_root_html'] + paths['sketch_path'] + "autogen_syntax.html"
             this_file_data['uf2_path'] = paths['hosted_root_autogen'] + paths['sketch_path'] + "CURRENT.UF2"
 
