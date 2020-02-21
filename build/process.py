@@ -37,7 +37,7 @@ for root, subdirs, files in os.walk(rootdir):
 
             # Create various paths
             paths = {}
-            paths['hosted_root_html'] = "https://runjumplabs.github.io/dreammaker_fx/autogen/"
+            paths['hosted_root_html'] = "https://runjumplabs.github.io/dreammaker_fx/sketches/"
             paths['hosted_root'] = "https://raw.githubusercontent.com/runjumplabs/dreammaker_fx_sketches/master/"
             paths['hosted_root_sketch'] = paths['hosted_root'] + "sketches/"
             paths['hosted_root_autogen'] = paths['hosted_root'] + "autogen/"
@@ -47,6 +47,7 @@ for root, subdirs, files in os.walk(rootdir):
             paths['filename_bare'] = filename.replace(".ino","")
             paths['local_autogen_path'] = os.path.join(root, filename).replace("/sketches","/autogen").replace(filename,"")
             paths['local_sketch_path'] = os.path.join(root, filename).replace(filename,"")
+            paths['local_hosted_html'] = paths['local_autogen_path'] .replace("../autogen/",html_web_dir)
 
 
             # Create data object for this sketch
@@ -145,7 +146,7 @@ for root, subdirs, files in os.walk(rootdir):
             if (os.path.isfile(paths['local_autogen_path']+"autogen_syntax.html")):
                 os.remove(paths['local_autogen_path']+"autogen_syntax.html")
 
-            args = ['node','syntax.js',paths['local_sketch'] , paths['local_autogen_path']+"/autogen_syntax.html"]
+            args = ['node','syntax.js',paths['local_sketch'] , paths['local_hosted_html']+"/autogen_syntax.html"]
             if True:
                 subprocess.call(args)
             else:
