@@ -31,7 +31,7 @@ Youtube Url:
 Soundcloud Url:
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.5.2
+DreamMakerFx package version: 1.5.3
 Sketch version: 1.0
 */ 
 #include <dreammakerfx.h>
@@ -48,7 +48,7 @@ void setup() {
   // put your setup code here, to run once:
   
   // Initialize the pedal!
-  pedal.init(true, true, true);
+  pedal.init(true, true);
 
   // Route audio through effects from pedal.instr_in to pedal.amp_out
   pedal.route_audio(pedal.instr_in, env.input);

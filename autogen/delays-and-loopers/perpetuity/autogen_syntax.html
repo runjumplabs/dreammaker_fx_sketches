@@ -1,0 +1,190 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>DreamMaker FX Sketch</title>
+
+	<link rel="stylesheet"
+	      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/default.min.css">
+
+	
+</head>
+<body>
+
+<pre><code class="arduino">/******************************************************************************
+ * DreamMaker FX / www.dreammakerfx.com
+ *****************************************************************************/
+/*
+Effect name: Perpetuity
+
+Effect description:  Hold down the left footswtich to "catch" a note which will
+ring out indefinitely.  Press and hold down the left footswitch to layer on 
+more notes to create a sonic canvas to play over.   Tap the right footswitch
+to release the held notes.  When the left footswich is held down to capture notes,
+the clean channel is muted so you only hear the swell of the capture droning 
+notes.
+
+This effect works by running the notes through an ADSR envelope so it quickly fades
+in and then fades out.  This audio is then sent to four delay lines that are staggered
+so the attack / decay of the note becomes a solid wall of sound.
+
+Left pot label: Mod depth 
+Left pot function: Modulation depth applied to the held notes
+
+Center pot label: Drone volume
+Center pot function: How loud the droning notes are relative to the played note
+
+Right pot label: Mod rate
+Right pot function: Modulation rate applied to the held notes
+
+Left footswitch label: Catch
+Left footswitch function: Hold down the left foot switch to add layers to the sonic canvas
+While the left footswitch is pressed down, it will only catch new notes that are played.
+It will not capture whatever is ringing out.  
+
+Right footswitch label: Release
+Right footswitch function: Tap to release the sonic canvas 
+
+Youtube Url:
+Soundcloud Url: https://soundcloud.com/dreammakerfx/perpetuity
+
+Created by: DreamMaker
+DreamMakerFx package version: 1.5.3
+Sketch version: 1.0
+*/    
+#include &lt;dreammakerfx.h&gt;
+
+// Adjust the total time in milliseconds of the repeats - longer is more droney
+#define TIME  800
+
+
+fx_gain     in_gate(0.0), clean_mix(1.0), hold_mix(1.0);
+
+// Delay lines that will hold the notes
+fx_delay    delay_perp_1(TIME*2, TIME*2, 0.95, 0.0, 0.5, false);
+fx_delay    delay_perp_2(TIME*2, TIME*2, 0.95, 0.0, 0.5, false);
+fx_delay    delay_perp_3(TIME*2, TIME*2, 0.95, 0.0, 0.5, false);
+fx_delay    delay_perp_4(TIME*2, TIME*2, 0.95, 0.0, 0.5, false);
+
+// Delay lines used to just delay the incoming audio by a certain
+// amount to stagger the signals
+fx_delay    delay_offset2((2*TIME)*0.25, TIME, 0.0, 0.0, 1.0, false);
+fx_delay    delay_offset3((2*TIME)*0.5, TIME, 0.0, 0.0, 1.0, false);
+fx_delay    delay_offset4((2*TIME)*0.75, TIME, 0.0, 0.0, 1.0, false);
+
+// Applies the attack / decay effect 
+fx_adsr_envelope  adsr(TIME, 10, 10, TIME, 1.0, 1.0);
+
+// A gentle chorus applied to drone
+fx_variable_delay   chorus(0.1, 0.3, 0.0, OSC_SINE);
+
+// Mixing signals together
+fx_mixer_4  mix4;
+fx_mixer_2  mix2;
+
+
+
+void setup() {
+  // put your setup code here, to run once:
+
+  // Initialize the pedal!
+  pedal.init();
+
+  // Gate ADSR so we're not feeding audio into it when the left
+  // footswtich is note pressed
+  pedal.route_audio(pedal.instr_in, in_gate.input);
+  pedal.route_audio(in_gate.output, adsr.input);
+  pedal.route_audio(adsr.output, delay_perp_1.input);
+
+  // Send staggered delay lines
+  pedal.route_audio(adsr.output, delay_offset2.input);
+  pedal.route_audio(delay_offset2.output, delay_perp_2.input);
+
+  pedal.route_audio(adsr.output, delay_offset3.input);
+  pedal.route_audio(delay_offset3.output, delay_perp_3.input);
+
+  pedal.route_audio(adsr.output, delay_offset4.input);
+  pedal.route_audio(delay_offset4.output, delay_perp_4.input);
+
+  pedal.route_audio(delay_perp_1.output, mix4.input_1);
+  pedal.route_audio(delay_perp_2.output, mix4.input_2);
+  pedal.route_audio(delay_perp_3.output, mix4.input_3);
+  pedal.route_audio(delay_perp_4.output, mix4.input_4);
+
+  // Mix drone and send through chorus
+  pedal.route_audio(mix4.output, hold_mix.input);
+  pedal.route_audio(hold_mix.output, chorus.input);
+  pedal.route_audio(chorus.output, mix2.input_1);
+  
+  // Send clean through a gate so we don't hear it while we are
+  // recoding a droning note
+  pedal.route_audio(pedal.instr_in, clean_mix.input);
+  pedal.route_audio(clean_mix.output, mix2.input_2);
+  
+  pedal.route_audio(mix2.output, pedal.amp_out);
+
+  // Trigger a new ADSR envelope when the pedal detects a new note
+  pedal.route_control(pedal.new_note, adsr.start);
+  
+  pedal.run();
+}
+
+void loop() {
+
+  // When pedal is held down, set delay feedback to max to "hold"
+  // the notes.  Cut clean audio and open gate to let audio into 
+  // delay lines.
+  if (pedal.button_pressed(FOOTSWITCH_LEFT, true)) {
+    in_gate.set_gain(1.0);
+    delay_perp_1.set_feedback(1.0);
+    delay_perp_2.set_feedback(1.0);
+    delay_perp_3.set_feedback(1.0);
+    delay_perp_4.set_feedback(1.0);
+    clean_mix.set_gain(0.0);
+    
+  }
+
+  // When left foot switch is released, cut audio going
+  // into drone and put back clean audio
+  if (pedal.button_released(FOOTSWITCH_LEFT, true)) {
+    in_gate.set_gain(0.0);
+    clean_mix.set_gain(1.0);
+  }
+
+  // Right footswitch kills the drone  - set to high value
+  // to let them ring out longer once drone is killed
+  if (pedal.button_pressed(FOOTSWITCH_RIGHT, false)) {
+    delay_perp_1.set_feedback(0.45);
+    delay_perp_2.set_feedback(0.45);
+    delay_perp_3.set_feedback(0.45);
+    delay_perp_4.set_feedback(0.45);    
+  }
+
+
+  // Left pot changes the feedback of the delay (determining how long the echoes last)
+  if (pedal.pot_left.has_changed()) {
+    chorus.set_depth(pedal.pot_left.val);
+  }
+
+  // Center pot can also be used to change the delay length 
+  if (pedal.pot_center.has_changed()) {
+    hold_mix.set_gain(pedal.pot_center.val);
+  }    
+
+  
+  // Right pot changes the wet / dry mix
+  if (pedal.pot_right.has_changed()) {
+    chorus.set_rate_hz(0.2 * pedal.pot_right.val);
+  }  
+  
+  
+  // Service pedal
+  pedal.service();
+}
+</code></pre>
+
+</body>	
+	<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+</html>

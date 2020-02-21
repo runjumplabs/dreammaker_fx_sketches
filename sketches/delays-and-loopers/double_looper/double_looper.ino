@@ -31,7 +31,7 @@ Youtube Url:
 Soundcloud Url: 
 
 Created by: DreamMaker
-DreamMakerFx package version: 1.5.2
+DreamMakerFx package version: 1.5.3
 Sketch version: 1.0
 */
 
