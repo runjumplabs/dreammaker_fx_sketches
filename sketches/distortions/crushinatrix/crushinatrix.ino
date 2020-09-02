@@ -21,7 +21,7 @@
   Right footswitch function: N/A
 
   Youtube Url: 
-  Soundcloud Url: https://soundcloud.com/modusjonens/crushinator-audio-tour
+  Soundcloud Url: https://soundcloud.com/modusjonens/crushinatrix-audio-tour
 
   Created by: joedougherty
   DreamMakerFx package version: 1.6.6
